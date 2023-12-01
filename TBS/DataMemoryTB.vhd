@@ -12,7 +12,7 @@ ARCHITECTURE tb_arch OF DataMemory_TB IS
     SIGNAL clk : STD_LOGIC := '0';
     SIGNAL memread, memwrite, protect, free : STD_LOGIC := '1';
     SIGNAL addr : STD_LOGIC_VECTOR(31 DOWNTO 0);
-    SIGNAL datain, dataout : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL datain, dataout : STD_LOGIC_VECTOR(15 DOWNTO 0);
 
 BEGIN
     mem : ENTITY work.DataMemory
@@ -46,7 +46,7 @@ BEGIN
         WAIT FOR CLOCK_PERIOD;
         memwrite <= '1';
         addr <= X"0000_0000"; -- Address 0
-        datain <= X"5555_5555"; -- Data to be written
+        datain <= "0101010101010101"; -- Data to be written
         WAIT FOR CLOCK_PERIOD;
         memwrite <= '0';
 
@@ -67,7 +67,7 @@ BEGIN
         WAIT FOR CLOCK_PERIOD;
         memwrite <= '1';
         addr <= X"0000_0000"; -- Address 0
-        datain <= X"FFFF_FFFF"; -- Data to be written
+        datain <= X"FFFF"; -- Data to be written
         WAIT FOR CLOCK_PERIOD;
         memwrite <= '0';
 
@@ -88,7 +88,7 @@ BEGIN
         WAIT FOR CLOCK_PERIOD;
         memwrite <= '1';
         addr <= X"0000_0000"; -- Address 0
-        datain <= X"FFFF_FFFF"; -- Data to be written
+        datain <= X"FFFF"; -- Data to be written
         WAIT FOR CLOCK_PERIOD;
         memwrite <= '0';
 
