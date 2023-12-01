@@ -10,15 +10,12 @@ ENTITY RegisterFile IS
         Rout2 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
         Rin1 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
         Rin2 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-        PCin : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-        PCout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
         SPin : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
         SPout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
         CCRin : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
         CCRout : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
         RWriteSignal1 : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
         RWriteSignal2 : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-        PCWriteSignal : IN STD_LOGIC; -- '0' Read / '1' Write
         SPWriteSignal : IN STD_LOGIC; -- '0' Read / '1' Write
         CCRWriteSignal : IN STD_LOGIC_VECTOR(2 DOWNTO 0) -- '0' Read / '1' Write
     );
@@ -33,7 +30,6 @@ ARCHITECTURE RegisterFileArch OF RegisterFile IS
     SIGNAL R5 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL R6 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL R7 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL PC : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL SP : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL CCR : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
 BEGIN
@@ -78,9 +74,6 @@ BEGIN
                     Rout2 <= R7;
             END CASE;
 
-            IF (PCWriteSignal = '0') THEN
-                PCout <= PC;
-            END IF;
 
             IF (SPWriteSignal = '0') THEN
                 SPout <= SP;
@@ -132,9 +125,6 @@ BEGIN
                     R7 <= Rin2;
             END CASE;
 
-            IF (PCWriteSignal = '1') THEN
-                PC <= PCin;
-            END IF;
 
             IF (SPWriteSignal = '1') THEN
                 SP <= SPin;
