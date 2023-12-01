@@ -1,7 +1,11 @@
 work/
+output_files/
+db/
+*.qpf
+*.qsf
+*.qws
 *.mti
 *.mpf
 *.wlf
 *.bak
 transcript
-wlfths36r2

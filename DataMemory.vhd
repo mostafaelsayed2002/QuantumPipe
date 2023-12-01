@@ -36,7 +36,7 @@ BEGIN
 
             IF protect = '1' THEN
 
-                helper33(16) := '1'
+                helper33(16) := '1';
                 helper33(33) := '1';
 
                 ram(to_integer(UNSIGNED(addr(11 DOWNTO 0)))) <= helper33(16 DOWNTO 0);
@@ -44,7 +44,7 @@ BEGIN
 
             ELSIF free = '1' THEN
 
-                helper33(16) := '0'
+                helper33(16) := '0';
                 helper33(33) := '0';
 
                 ram(to_integer(UNSIGNED(addr(11 DOWNTO 0)))) <= helper33(16 DOWNTO 0);
