@@ -22,7 +22,7 @@ ARCHITECTURE DataMemoryArch OF DataMemory IS
     -- extra bit is for protection and liberation
     TYPE ram_type IS ARRAY(0 TO (2 ** ADDRESS_BITS - 1)) OF STD_LOGIC_VECTOR(16 DOWNTO 0);
 
-    SIGNAL ram : ram_type;
+    SIGNAL ram : ram_type := (OTHERS => (OTHERS => '0'));
 
 BEGIN
     PROCESS (clk) IS
@@ -59,13 +59,13 @@ BEGIN
                     ram(to_integer(UNSIGNED(addr(11 DOWNTO 0)))) <= helper33(16 DOWNTO 0);
                     ram(to_integer(UNSIGNED(addr(11 DOWNTO 0))) + 1) <= helper33(33 DOWNTO 17);
                 END IF;
-            ELSIF memread = '1' THEN
-                helper33(16 downto 0) := ram(to_integer(UNSIGNED(addr(11 DOWNTO 0))));
-                helper33(33 downto 17) := ram(to_integer(UNSIGNED(addr(11 DOWNTO 0))) + 1);
-                
+            ELSE
+                helper33(16 DOWNTO 0) := ram(to_integer(UNSIGNED(addr(11 DOWNTO 0))));
+                helper33(33 DOWNTO 17) := ram(to_integer(UNSIGNED(addr(11 DOWNTO 0))) + 1);
+
                 -- 32 to dataout
-                helper32(15 downto 0) := helper33(15 downto 0); 
-                helper32(31 downto 16) := helper33(32 downto 17); 
+                helper32(15 DOWNTO 0) := helper33(15 DOWNTO 0);
+                helper32(31 DOWNTO 16) := helper33(32 DOWNTO 17);
 
                 dataout <= helper32;
             END IF;
