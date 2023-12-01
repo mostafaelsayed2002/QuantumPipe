@@ -7,11 +7,9 @@ ENTITY Ex_Stage IS
         --control signals input 
         IMM_EA : IN STD_LOGIC;
         ALU_SRC: IN STD_LOGIC;
-        FW_SRC: IN STD_LOGIC;
         ALU_OP: IN STD_LOGIC_VECTOR(3 DOWNTO 0);
-        IMP_SRCs: IN STD_LOGIC_VECTOR(1 DOWNTO 0);
-        FW_SEL_1: IN STD_LOGIC(2 DOWNTO 0);
-        FW_SEL_2: IN STD_LOGIC(2 DOWNTO 0);
+        FW_SEL_1: IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+        FW_SEL_2: IN STD_LOGIC_VECTOR(2 DOWNTO 0);
         --data input
         OP_1 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
         OP_2 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -34,36 +32,75 @@ ARCHITECTURE ARCH_Ex_Stage OF Ex_Stage IS
     SIGNAL alu_in_1: STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL alu_in_2: STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL op2_imm_ea: STD_LOGIC_VECTOR(31 DOWNTO 0);
-
+    SIGNAL imm_ase: STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL ea_ase: STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL op2_mux: STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL c_new: STD_LOGIC_VECTOR(2 DOWNTO 0);
     
+    SIGNAL cat_signal: STD_LOGIC_VECTOR(19 DOWNTO 0);
+    begin
+
+    se0: entity work.SignExtend GENERIC MAP(16) port map(
+        length => '1',
+        s_input => bit_ea_imm_16,
+        s_output => imm_ase
+    );
+
+    cat_signal <= bit_ea_4 & bit_ea_imm_16;
+    se1: entity work.SignExtend GENERIC MAP(20) port map(
+        length => '0',
+        s_input => cat_signal,
+        s_output => ea_ase
+    );
+    
+
     m0: entity work.Mux_2_1 GENERIC MAP(32) port map(
-        a => OP_2,
-        b => bit_ea_imm_16,
+        a => imm_ase,
+        b => ea_ase,
         sel => IMM_EA,
         y => op2_imm_ea
     );
 
+    m1: entity work.Mux_2_1 GENERIC MAP(32) port map(
+        a => op2_imm_ea,
+        b => OP_2,
+        sel => ALU_SRC,
+        y => op2_mux
+    );
 
 
-    m1: entity work.Mux_5_3 GENERIC MAP(32) port map(
+    m2: entity work.Mux_5_3 GENERIC MAP(32) port map(
         a => OP_1,
         b => Rdst_WB_data,  
         c => Rdst_SWAP_Ex,
         d => Rdst_SWAP_Mem,
         e => Alu_output,
-        sel => Fw_Sel_1,
+        s => Fw_Sel_1,
         y => alu_in_1
     );
-    m2: entity work.Mux_5_3 GENERIC MAP(32) port map(
-        a => op2_imm_ea,
+
+    m3: entity work.Mux_5_3 GENERIC MAP(32) port map(
+        a => op2_mux,
         b => Rdst_WB_data,  
         c => Rdst_SWAP_Ex,
         d => Rdst_SWAP_Mem,
         e => Alu_output,
-        sel => Fw_Sel_2,
+        s => Fw_Sel_2,
         y => alu_in_2
     );
 
+    alu: entity work.ALU port map(
+        op => ALU_OP,
+        c_old => "000",
+        in1 => alu_in_1,
+        in2 => alu_in_2,
+        outp => Result,
+        c_new => c_new
+    );
+
+    Input_1 <= alu_in_1;
+    Port_Data <= alu_in_1;
 
 END ARCH_Ex_Stage; 
+
 
