@@ -121,18 +121,19 @@ BEGIN
                 c_new(1 DOWNTO 0) <= SetFlag(imm_res);
                 c_new(2) <= c_old(2);
                 outp <= imm_res;
+
                 -- xor 
             WHEN "1001" =>
                 imm_res := in1 XOR in2;
                 c_new(1 DOWNTO 0) <= SetFlag(imm_res);
                 c_new(2) <= c_old(2);
                 outp <= imm_res;
+
                 -- cmp
             WHEN "1010" =>
                 imm_res := STD_LOGIC_VECTOR(UNSIGNED(in1) - UNSIGNED(in2));
                 c_new(1 DOWNTO 0) <= SetFlag(imm_res);
                 c_new(2) <= c_old(2);
-
                 outp <= imm_res;
 
                 -- bitset
@@ -141,23 +142,21 @@ BEGIN
                 imm_res(to_integer(unsigned(in2(4 DOWNTO 0)))) := '1';
                 c_new(1 DOWNTO 0) <= SetFlag(imm_res);
                 c_new(2) <= c_old(2);
+                outp <= imm_res;
 
                 -- rcl
             WHEN "1100" =>
-
                 helper := to_integer(unsigned(in2(4 DOWNTO 0)));
-
                 imm_res := in1(helper - 1 DOWNTO 0) & in1(31 DOWNTO helper);
-
                 c_new(2) <= in1(helper);
+                outp <= imm_res;
 
                 -- rcr
             WHEN "1101" =>
                 helper := to_integer(unsigned(in2(4 DOWNTO 0)));
-
                 imm_res := in1(31 DOWNTO helper + 1) & in1(helper DOWNTO 0);
-
                 c_new(2) <= in1(helper);
+                outp <= imm_res;
 
             WHEN "1110" =>
                 c_new <= c_old;
