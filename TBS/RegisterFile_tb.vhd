@@ -15,15 +15,12 @@ ARCHITECTURE RegisterFile_tbArch OF RegisterFile_tb IS
     SIGNAL Rout2 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL Rin1 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL Rin2 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL PCin : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL PCout : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL SPin : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL SPout : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL CCRin : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
     SIGNAL CCRout : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
     SIGNAL RWriteSignal1 : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
     SIGNAL RWriteSignal2 : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL PCWriteSignal : STD_LOGIC := '0'; -- '0' Read / '1' Write
     SIGNAL SPWriteSignal : STD_LOGIC := '0'; -- '0' Read / '1' Write
     SIGNAL CCRWriteSignal : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0'); -- '0' Read / '1' Write
 BEGIN
@@ -35,15 +32,12 @@ BEGIN
         Rout2 => Rout2,
         Rin1 => Rin1,
         Rin2 => Rin2,
-        PCin => PCin,
-        PCout => PCout,
         SPin => SPin,
         SPout => SPout,
         CCRin => CCRin,
         CCRout => CCRout,
         RWriteSignal1 => RWriteSignal1,
         RWriteSignal2 => RWriteSignal2,
-        PCWriteSignal => PCWriteSignal,
         SPWriteSignal => SPWriteSignal,
         CCRWriteSignal => CCRWriteSignal);
 
@@ -56,7 +50,6 @@ BEGIN
         Rsrc2 <= "010";
         Rin1 <= (OTHERS => '1');
         Rin2 <= (OTHERS => '1');
-        PCin <= (OTHERS => '1');
         SPin <= (OTHERS => '1');
         CCRin <= "010";
 
@@ -64,7 +57,6 @@ BEGIN
 
         RWriteSignal1 <= "001";
         RWriteSignal2 <= "010";
-        PCWriteSignal <= '0';
         SPWriteSignal <= '0';
         CCRWriteSignal <= "111";
 
@@ -72,13 +64,11 @@ BEGIN
 
         RWriteSignal1 <= "001";
         RWriteSignal2 <= "010";
-        PCWriteSignal <= '1';
         SPWriteSignal <= '1';
         CCRWriteSignal <= "000";
 
         WAIT FOR 5 ns;
 
-        PCWriteSignal <= '0';
         SPWriteSignal <= '0';
 
     END PROCESS;
