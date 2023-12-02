@@ -1,30 +1,46 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
-USE ieee.numeric_std.ALL;
+USE ieee.std_logic_textio.ALL;
 
-ENTITY RegisterFile_tb IS
-END ENTITY RegisterFile_tb;
+ENTITY RegisterFile_TestBench IS
+END ENTITY RegisterFile_TestBench;
 
-ARCHITECTURE RegisterFile_tbArch OF RegisterFile_tb IS
-    CONSTANT ClockFreq : INTEGER := 100e6;
-    CONSTANT ClockPeriod : TIME := 1200ms / ClockFreq;
-    SIGNAL Clk : STD_LOGIC := '1';
-    SIGNAL Rsrc1 : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL Rsrc2 : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL Rout1 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL Rout2 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL Rin1 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL Rin2 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL SPin : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL SPout : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL CCRin : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL CCRout : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL RWriteSignal1 : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL RWriteSignal2 : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL SPWriteSignal : STD_LOGIC := '0'; -- '0' Read / '1' Write
-    SIGNAL CCRWriteSignal : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0'); -- '0' Read / '1' Write
+ARCHITECTURE TestBenchArch OF RegisterFile_TestBench IS
+    SIGNAL Clk : STD_LOGIC := '0';
+    SIGNAL Rsrc1, Rsrc2 : STD_LOGIC_VECTOR(2 DOWNTO 0) := "000";
+    SIGNAL Rout1, Rout2 : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL Rin1, Rin2 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL SPin, SPout : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL CCRin, CCRout : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL WB1_Address, WB2_Address : STD_LOGIC_VECTOR(2 DOWNTO 0) := "000";
+    SIGNAL WB1_Signal, WB2_Signal, SPWriteSignal : STD_LOGIC := '0';
+    SIGNAL CCRWriteSignal : STD_LOGIC_VECTOR(2 DOWNTO 0) := "000";
+
+    COMPONENT RegisterFile
+        PORT (
+            Clk : IN STD_LOGIC;
+            Rsrc1 : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+            Rsrc2 : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+            Rout1 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+            Rout2 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+            Rin1 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+            Rin2 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+            SPin : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+            SPout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+            CCRin : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+            CCRout : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+            WB1_Address : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+            WB2_Address : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+            WB1_Signal : IN STD_LOGIC;
+            WB2_Signal : IN STD_LOGIC;
+            SPWriteSignal : IN STD_LOGIC;
+            CCRWriteSignal : IN STD_LOGIC_VECTOR(2 DOWNTO 0)
+        );
+    END COMPONENT;
+
 BEGIN
-    rg : ENTITY work.RegisterFile(RegisterFileArch) PORT MAP(
+    UUT : RegisterFile
+    PORT MAP(
         Clk => Clk,
         Rsrc1 => Rsrc1,
         Rsrc2 => Rsrc2,
@@ -36,40 +52,42 @@ BEGIN
         SPout => SPout,
         CCRin => CCRin,
         CCRout => CCRout,
-        RWriteSignal1 => RWriteSignal1,
-        RWriteSignal2 => RWriteSignal2,
+        WB1_Address => WB1_Address,
+        WB2_Address => WB2_Address,
+        WB1_Signal => WB1_Signal,
+        WB2_Signal => WB2_Signal,
         SPWriteSignal => SPWriteSignal,
-        CCRWriteSignal => CCRWriteSignal);
+        CCRWriteSignal => CCRWriteSignal
+    );
 
-    Clk <= NOT Clk AFTER ClockPeriod /2;
+    -- Clock process
     PROCESS
     BEGIN
-        WAIT FOR 12 ns;
-
-        Rsrc1 <= "001";
-        Rsrc2 <= "010";
-        Rin1 <= (OTHERS => '1');
-        Rin2 <= (OTHERS => '1');
-        SPin <= (OTHERS => '1');
-        CCRin <= "010";
-
-        WAIT FOR 2 ns;
-
-        RWriteSignal1 <= "001";
-        RWriteSignal2 <= "010";
-        SPWriteSignal <= '0';
-        CCRWriteSignal <= "111";
-
         WAIT FOR 5 ns;
-
-        RWriteSignal1 <= "001";
-        RWriteSignal2 <= "010";
-        SPWriteSignal <= '1';
-        CCRWriteSignal <= "000";
-
-        WAIT FOR 5 ns;
-
-        SPWriteSignal <= '0';
-
+        Clk <= NOT Clk;
     END PROCESS;
-END ARCHITECTURE RegisterFile_tbArch;
+
+    -- Stimulus process
+    PROCESS
+    BEGIN
+        WAIT FOR 10 ns;
+        Rsrc1 <= "010"; -- Select R1 for Rout1
+        Rsrc2 <= "010"; -- Select R2 for Rout2
+        Rin1 <= x"0000000A"; -- Input data for R1
+        Rin2 <= x"0000000F"; -- Input data for R2
+        WB1_Address <= "000"; -- Write to R1
+        WB2_Address <= "001"; -- Write to R1
+        WB1_Signal <= '1'; -- Enable write to R1
+        WB2_Signal <= '1'; -- Enable write to R1
+        WAIT FOR 10 ns;
+        WB1_Signal <= '0'; -- Enable write to R1
+        WB2_Signal <= '0'; -- Enable write to R1
+        Rsrc1 <= "000"; -- Select R1 for Rout1
+        Rsrc2 <= "001"; -- Select R2 for Rout2
+
+        -- Add more stimuli as needed
+
+        WAIT;
+    END PROCESS;
+
+END TestBenchArch;
