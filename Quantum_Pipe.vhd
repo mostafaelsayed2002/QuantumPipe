@@ -2,64 +2,71 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
-Entity Quantum_Pipe is 
-    Port(
+ENTITY Quantum_Pipe IS
+    PORT (
         --inputs
-        in_port: in std_logic_vector(31 downto 0);
-        intr: in std_logic;
-        reset: in std_logic;
+        in_port : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+        intr : IN STD_LOGIC;
+        reset : IN STD_LOGIC;
         --output 
-        out_port: out std_logic_vector(31 downto 0);
+        out_port : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
     );
-End Quantum_Pipe;
+END Quantum_Pipe;
 
-architecture Arch_Quantum_Pipe of Quantum_Pipe is 
-    SIGNAL clk : std_logic;
-    SIGNAL fixpc : std_logic;
-    SIGNAL jmpflag : std_logic;
-    SIGNAL pcval : std_logic_vector(31 downto 0);
-    SIGNAL instr : std_logic_vector(15 downto 0);
-    SIGNAL Regout_FD : std_logic_vector(47 downto 0);
-    SIGNAL WB1_Signal : std_logic;
-    SIGNAL WB2_Signal : std_logic;
-    SIGNAL WB1_Address : std_logic_vector(2 downto 0);
-    SIGNAL WB2_Address : std_logic_vector(2 downto 0);
-    SIGNAL WB1_data : std_logic_vector(31 downto 0);
-    SIGNAL WB2_data : std_logic_vector(31 downto 0);
-    SIGNAL Data_R1 : std_logic_vector(31 downto 0);
-    SIGNAL Data_R2 : std_logic_vector(31 downto 0);
-    SIGNAL zero_flag : std_logic;
-    SIGNAL Regout_DE : std_logic_vector(142 downto 0);
-    SIGNAL IMM_EA : std_logic;
-    SIGNAL ALU_SRC : std_logic;
-    SIGNAL ALU_OP : std_logic_vector(3 downto 0);
-    SIGNAL Fw_Sel_1 : std_logic_vector(2 downto 0);
-    SIGNAL Fw_Sel_2 : std_logic_vector(2 downto 0);
-    SIGNAL Rdst_WB_data : std_logic_vector(31 downto 0);
-    SIGNAL ALU_output : std_logic_vector(31 downto 0);
-    begin
-        process(clk)
-        begin
-            wait for 10 ns;
-            clk <= not clk;
-        end process;
-    F: FetchingStage port map(
+ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
+    SIGNAL clk : STD_LOGIC;
+    SIGNAL fixpc : STD_LOGIC;
+    SIGNAL jmpflag : STD_LOGIC;
+    SIGNAL pcval : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL instr : STD_LOGIC_VECTOR(15 DOWNTO 0);
+    SIGNAL Regout_FD : STD_LOGIC_VECTOR(47 DOWNTO 0);
+    SIGNAL WB1_Signal : STD_LOGIC;
+    SIGNAL WB2_Signal : STD_LOGIC;
+    SIGNAL WB1_Address : STD_LOGIC_VECTOR(2 DOWNTO 0);
+    SIGNAL WB2_Address : STD_LOGIC_VECTOR(2 DOWNTO 0);
+    SIGNAL WB1_data : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL WB2_data : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL Data_R1 : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL Data_R2 : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL zero_flag : STD_LOGIC;
+    SIGNAL Regout_DE : STD_LOGIC_VECTOR(142 DOWNTO 0);
+    SIGNAL IMM_EA : STD_LOGIC;
+    SIGNAL ALU_SRC : STD_LOGIC;
+    SIGNAL ALU_OP : STD_LOGIC_VECTOR(3 DOWNTO 0);
+    SIGNAL Fw_Sel_1 : STD_LOGIC_VECTOR(2 DOWNTO 0);
+    SIGNAL Fw_Sel_2 : STD_LOGIC_VECTOR(2 DOWNTO 0);
+    SIGNAL Rdst_WB_data : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL ALU_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
+
+    SIGNAL Rdst_SWAP_Mem : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL Rdst_SWAP_Ex : STD_LOGIC_VECTOR(31 DOWNTO 0);
+
+    SIGNAL Excute_Result : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL Excute_Input : STD_LOGIC_VECTOR(31 DOWNTO 0);
+BEGIN
+    PROCESS (clk)
+    BEGIN
+        WAIT FOR 10 ns;
+        clk <= NOT clk;
+    END PROCESS;
+    F : FetchingStage PORT MAP(
         clk => clk,
         fixpc => fixpc,
         jmpflag => jmpflag,
         jmplocation => Data_R1,
         pcval => pcval,
-        instr => instr 
+        instr => instr
     );
-    REG_FD: Reg GENERIC MAP(48) port map(
+    REG_FD : Reg GENERIC MAP(
+        48) PORT MAP(
         Clk => clk,
-        Input => pcval & instr ,
+        Input => ,
         Output => Regout_FD,
         Rst => reset
     );
-    D: Decode_Stage port map(
+    D : Decode_Stage PORT MAP(
         Clk => clk,
-        Instruction => Regout_FD(15 downto 0),
+        Instruction => Regout_FD(15 DOWNTO 0),
         WB1_Address => WB1_Address,
         WB2_Address => WB2_Address,
         WB1_data => WB1_data,
@@ -71,37 +78,39 @@ architecture Arch_Quantum_Pipe of Quantum_Pipe is
         jmp_Flag => jmpflag,
         Zero_Flag => zero_flag,
     );
-    REG_DE: Reg GENERIC MAP(143) port map(
+    REG_DE : Reg GENERIC MAP(
+        143) PORT MAP(
         Clk => clk,
-        Input => Regout_FD(3 downto 0) & Date_R1 & Data_R2 & zero_flag,
+        Input => Regout_FD(3 DOWNTO 0) & Date_R1 & Data_R2 & zero_flag,
         Output => Regout_DE,
         Rst => reset
     );
 
-    E: Ex_Stage port map(
+    E : Ex_Stage PORT MAP(
         IMM_EA => IMM_EA,
         ALU_SRC => ALU_SRC,
         ALU_OP => ALU_OP,
         FW_SEL_1 => FW_SEL_1,
         FW_SEL_2 => FW_SEL_2,
-        OP_1 => Regout_DE(32 downto 1),
-        OP_2 => Regout_DE(64 downto 33),
-        bit_ea_4 => Regout_DE(68 downto 65),
+        OP_1 => Regout_DE(32 DOWNTO 1),
+        OP_2 => Regout_DE(64 DOWNTO 33),
+        bit_ea_4 => Regout_DE(68 DOWNTO 65),
         bit_ea_imm_16 => instr,
         ----
-        Rdst_WB_data => Rdst_WB_data,
-        ALU_output => ALU_output,
-        ---        Rdst_SWAP_Ex => Regout_DE(195 downto 164),
-        Rdst_SWAP_Mem => Regout_DE(227 downto 196),
-        Result => Regout_DE(259 downto 228),
-        Input_1 => Regout_DE(291 downto 260),
-        Port_Data => Regout_DE(323 downto 292)
+        Rdst_WB_data => Rdst_WB_data, -- from wb
+        ALU_output => ALU_output, -- from memory
+        Rdst_SWAP_Ex => Rdst_SWAP_Ex,
+        Rdst_SWAP_Mem => Rdst_SWAP_Mem,
+        Result => Excute_Result,
+        Input_1 => Excute_Input,
+        Port_Data => in_port
     );
-    
 
-end architecture Arch_Quantum_Pipe;
-
-
-
-
-
+    REG_DE : Reg GENERIC MAP(
+        149) PORT MAP(
+        Clk => clk,
+        Input => ,
+        Output => Regout_DE,
+        Rst => reset
+    );
+END ARCHITECTURE Arch_Quantum_Pipe;
