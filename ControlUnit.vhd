@@ -9,7 +9,7 @@ ENTITY ControlUnit IS
         IMM_Effective_Address : OUT STD_LOGIC; -- Relates to the use of an immediate value for an effective address.
         ALU_Source_Select : OUT STD_LOGIC; -- Denotes the source selection for the Arithmetic Logic Unit (ALU).
         Forwarding_Source : OUT STD_LOGIC; -- Represents the source for forwarding data.
-        ALU_Op_Code : OUT STD_LOGIC_VECTOR(4 DOWNTO 0); -- Specifies the operation code for the ALU.
+        ALU_Op_Code : OUT STD_LOGIC_VECTOR(3 DOWNTO 0); -- Specifies the operation code for the ALU.
         Implicit_Sources : OUT STD_LOGIC_VECTOR(1 DOWNTO 0); -- Indicates the use of implicit sources.
         Forwarding_Swap : OUT STD_LOGIC; -- Suggests swapping of forwarding sources.
         Call_Stack_Pointer : OUT STD_LOGIC; -- Signifies a call operation on the stack pointer.
@@ -35,7 +35,7 @@ BEGIN
             WHEN "00000" => -- NOP
                 IMM_Jump <= '0';
                 No_Operation <= '0';
-                ALU_Op_Code <= "00000";
+                ALU_Op_Code <= "0000";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
                 Free_Operation <= '0';
@@ -51,7 +51,7 @@ BEGIN
             WHEN "00001" => -- RET
                 IMM_Jump <= '1';
                 No_Operation <= '1';
-                ALU_Op_Code <= "00000";
+                ALU_Op_Code <= "0000";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
                 Free_Operation <= '0';
@@ -67,7 +67,7 @@ BEGIN
             WHEN "00010" => -- RTI
                 IMM_Jump <= '1';
                 No_Operation <= '1';
-                ALU_Op_Code <= "00000";
+                ALU_Op_Code <= "0000";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
                 Free_Operation <= '0';
@@ -84,7 +84,7 @@ BEGIN
                 IMM_Jump <= '0';
                 No_Operation <= '0';
                 Forwarding_Source <= '0';
-                ALU_Op_Code <= "00001";
+                ALU_Op_Code <= "0001";
                 Implicit_Sources <= "10";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
@@ -103,7 +103,7 @@ BEGIN
                 IMM_Jump <= '0';
                 No_Operation <= '0';
                 Forwarding_Source <= '0';
-                ALU_Op_Code <= "00010";
+                ALU_Op_Code <= "0010";
                 Implicit_Sources <= "10";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
@@ -122,7 +122,7 @@ BEGIN
                 IMM_Jump <= '0';
                 No_Operation <= '0';
                 Forwarding_Source <= '0';
-                ALU_Op_Code <= "00011";
+                ALU_Op_Code <= "0011";
                 Implicit_Sources <= "10";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
@@ -141,7 +141,7 @@ BEGIN
                 IMM_Jump <= '0';
                 No_Operation <= '0';
                 Forwarding_Source <= '0';
-                ALU_Op_Code <= "00100";
+                ALU_Op_Code <= "0100";
                 Implicit_Sources <= "10";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
@@ -193,7 +193,7 @@ BEGIN
                 IMM_Jump <= '0';
                 No_Operation <= '0';
                 Forwarding_Source <= '0';
-                ALU_Op_Code <= "01110";
+                ALU_Op_Code <= "1110";
                 Implicit_Sources <= "10";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
@@ -228,7 +228,7 @@ BEGIN
                 IMM_Jump <= '0';
                 No_Operation <= '0';
                 Forwarding_Source <= '0';
-                ALU_Op_Code <= "01110";
+                ALU_Op_Code <= "1110";
                 Implicit_Sources <= "10";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
@@ -246,7 +246,7 @@ BEGIN
                 IMM_Jump <= '0';
                 No_Operation <= '0';
                 Forwarding_Source <= '0';
-                ALU_Op_Code <= "01110";
+                ALU_Op_Code <= "1110";
                 Implicit_Sources <= "10";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
@@ -296,7 +296,7 @@ BEGIN
                 IMM_Jump <= '1';
                 No_Operation <= '0';
                 Forwarding_Source <= '0';
-                ALU_Op_Code <= "01110";
+                ALU_Op_Code <= "1110";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '1';
                 Free_Operation <= '0';
@@ -314,7 +314,7 @@ BEGIN
                 No_Operation <= '0';
                 ALU_Source_Select <= '1';
                 Forwarding_Source <= '1';
-                ALU_Op_Code <= "00101";
+                ALU_Op_Code <= "0101";
                 Implicit_Sources <= "00";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
@@ -334,7 +334,7 @@ BEGIN
                 No_Operation <= '0';
                 ALU_Source_Select <= '1';
                 Forwarding_Source <= '1';
-                ALU_Op_Code <= "00110";
+                ALU_Op_Code <= "0110";
                 Implicit_Sources <= "00";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
@@ -354,7 +354,7 @@ BEGIN
                 No_Operation <= '0';
                 ALU_Source_Select <= '1';
                 Forwarding_Source <= '1';
-                ALU_Op_Code <= "00111";
+                ALU_Op_Code <= "0111";
                 Implicit_Sources <= "00";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
@@ -374,7 +374,7 @@ BEGIN
                 No_Operation <= '0';
                 ALU_Source_Select <= '1';
                 Forwarding_Source <= '1';
-                ALU_Op_Code <= "01000";
+                ALU_Op_Code <= "1000";
                 Implicit_Sources <= "00";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
@@ -394,7 +394,7 @@ BEGIN
                 No_Operation <= '0';
                 ALU_Source_Select <= '1';
                 Forwarding_Source <= '1';
-                ALU_Op_Code <= "01001";
+                ALU_Op_Code <= "1001";
                 Implicit_Sources <= "00";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
@@ -414,7 +414,7 @@ BEGIN
                 No_Operation <= '0';
                 ALU_Source_Select <= '1';
                 Forwarding_Source <= '0';
-                ALU_Op_Code <= "01111";
+                ALU_Op_Code <= "1111";
                 Implicit_Sources <= "00";
                 Forwarding_Swap <= '1';
                 Call_Stack_Pointer <= '0';
@@ -434,7 +434,7 @@ BEGIN
                 No_Operation <= '0';
                 ALU_Source_Select <= '1';
                 Forwarding_Source <= '0';
-                ALU_Op_Code <= "01010";
+                ALU_Op_Code <= "1010";
                 Implicit_Sources <= "00";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
@@ -451,7 +451,7 @@ BEGIN
                 No_Operation <= '0';
                 IMM_Effective_Address <= '0';
                 ALU_Source_Select <= '0';
-                ALU_Op_Code <= "00101";
+                ALU_Op_Code <= "0101";
                 Implicit_Sources <= "01";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
@@ -472,7 +472,7 @@ BEGIN
                 IMM_Effective_Address <= '0';
                 ALU_Source_Select <= '0';
                 Forwarding_Source <= '0';
-                ALU_Op_Code <= "01011";
+                ALU_Op_Code <= "1011";
                 Implicit_Sources <= "10";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
@@ -493,7 +493,7 @@ BEGIN
                 IMM_Effective_Address <= '0';
                 ALU_Source_Select <= '0';
                 Forwarding_Source <= '0';
-                ALU_Op_Code <= "01100";
+                ALU_Op_Code <= "1100";
                 Implicit_Sources <= "10";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
@@ -514,7 +514,7 @@ BEGIN
                 IMM_Effective_Address <= '0';
                 ALU_Source_Select <= '0';
                 Forwarding_Source <= '0';
-                ALU_Op_Code <= "01101";
+                ALU_Op_Code <= "1101";
                 Implicit_Sources <= "10";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
@@ -535,7 +535,7 @@ BEGIN
                 IMM_Effective_Address <= '0';
                 ALU_Source_Select <= '0';
                 Forwarding_Source <= '0';
-                ALU_Op_Code <= "01111";
+                ALU_Op_Code <= "1111";
                 Implicit_Sources <= "10";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
@@ -555,7 +555,7 @@ BEGIN
                 No_Operation <= '0';
                 IMM_Effective_Address <= '1';
                 ALU_Source_Select <= '0';
-                ALU_Op_Code <= "01111";
+                ALU_Op_Code <= "1111";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
                 Free_Operation <= '0';
@@ -575,7 +575,7 @@ BEGIN
                 IMM_Effective_Address <= '1';
                 ALU_Source_Select <= '0';
                 Forwarding_Source <= '0';
-                ALU_Op_Code <= "01111";
+                ALU_Op_Code <= "1111";
                 Implicit_Sources <= "10";
                 Forwarding_Swap <= '0';
                 Call_Stack_Pointer <= '0';
