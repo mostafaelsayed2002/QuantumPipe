@@ -21,6 +21,7 @@ ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
     SIGNAL instr : STD_LOGIC_VECTOR(15 DOWNTO 0);
     SIGNAL Regout_FD : STD_LOGIC_VECTOR(47 DOWNTO 0);
     SIGNAL RegIN_FD : STD_LOGIC_VECTOR(47 DOWNTO 0);
+    --/////////////////////////////////////////
     SIGNAL WB1_Signal : STD_LOGIC;
     SIGNAL WB2_Signal : STD_LOGIC;
     SIGNAL WB1_Address : STD_LOGIC_VECTOR(2 DOWNTO 0);
@@ -29,6 +30,7 @@ ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
     SIGNAL WB2_data : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL Data_R1 : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL Data_R2 : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    --/////////////////////////////////////////
     SIGNAL zero_flag : STD_LOGIC;
     SIGNAL Regout_DE : STD_LOGIC_VECTOR(150 DOWNTO 0);
     SIGNAL IMM_EA : STD_LOGIC;
@@ -39,8 +41,8 @@ ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
     SIGNAL Rdst_WB_data : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL ALU_output : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
-    SIGNAL Rdst_SWAP_Mem : STD_LOGIC_VECTOR(31 DOWNTO 0);
-    SIGNAL Rdst_SWAP_Ex : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    -- SIGNAL Rdst_SWAP_Mem : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    -- SIGNAL Rdst_SWAP_Ex : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
     SIGNAL Excute_Result : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL Excute_Input : STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -68,10 +70,9 @@ ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
     SIGNAL OPCODE_OR_NOP : STD_LOGIC_VECTOR(4 DOWNTO 0);
     SIGNAL RegIN_DE : STD_LOGIC_VECTOR(150 DOWNTO 0);
 
-    SIGNAL REGIN_EM : STD_LOGIC_VECTOR(150 DOWNTO 0);
-    SIGNAL REGOUT_EM : STD_LOGIC_VECTOR(150 DOWNTO 0);
+    SIGNAL REGIN_EM : STD_LOGIC_VECTOR(149 DOWNTO 0);
+    SIGNAL REGOUT_EM : STD_LOGIC_VECTOR(149 DOWNTO 0);
 
-    SIGNAL SP : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL Neg_Flag : STD_LOGIC;
     SIGNAL Carry_Flag : STD_LOGIC;
     SIGNAL SPin : STD_LOGIC_VECTOR(31 DOWNTO 0);
@@ -79,7 +80,12 @@ ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
     SIGNAL CCRin : STD_LOGIC_VECTOR(2 DOWNTO 0);
     SIGNAL SPWriteSignal : STD_LOGIC;
     SIGNAL CCRWriteSignal : STD_LOGIC_VECTOR(2 DOWNTO 0);
+    SIGNAL SPNextVal : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
+    SIGNAL MemDataOut : STD_LOGIC_VECTOR(31 DOWNTO 0);
+
+    SIGNAL REGIN_MW : STD_LOGIC_VECTOR(175 DOWNTO 0);
+    SIGNAL REGOUT_MW : STD_LOGIC_VECTOR(175 DOWNTO 0);
 BEGIN
     PROCESS
     BEGIN
@@ -139,12 +145,12 @@ BEGIN
     D : ENTITY work.Decode_Stage PORT MAP(
         Clk => clk,
         Instruction => Regout_FD(15 DOWNTO 0),
-        WB1_Address => WB1_Address,
-        WB2_Address => WB2_Address,
-        WB1_data => WB1_data,
-        WB2_data => WB2_data,
-        WB1_Signal => WB1_Signal,
-        WB2_Signal => WB1_Signal,
+        WB1_Address => Regout_MW(40 DOWNTO 38),
+        WB2_Address => Regout_MW(37 DOWNTO 35),
+        WB1_data => Rdst_WB_data,
+        WB2_data => Regout_MW(31 DOWNTO 0),
+        WB1_Signal => Regout_MW(173),
+        WB2_Signal => Regout_MW(172),
         Data_R1 => Data_R1,
         Data_R2 => Data_R2,
         jmp_Flag => jmpflag,
@@ -209,12 +215,11 @@ BEGIN
         OP_2 => Regout_DE(64 DOWNTO 33),
         bit_ea_4 => Regout_DE(68 DOWNTO 65),
         bit_ea_imm_16 => Regout_DE(125 DOWNTO 110),
-        --?---- From the WB stage------
-        Rdst_WB_data => Rdst_WB_data, -- from wb
-        ALU_output => ALU_output, -- from memory
-        Rdst_SWAP_Ex => Rdst_SWAP_Ex,
-        Rdst_SWAP_Mem => Rdst_SWAP_Mem,
-        --?----------------------------
+        ------ From the WB stage------
+        Rdst_WB_data => Rdst_WB_data, -- from wb 
+        ALU_output => REGOUT_EM(72 DOWNTO 41), -- from memory
+        Rdst_SWAP_Ex => REGOUT_EM(136 DOWNTO 105),
+        Rdst_SWAP_Mem => REGOUT_MW(168 DOWNTO 137),
         ---- outputs
         Result => Excute_Result,
         Input_1 => Excute_Input,
@@ -222,26 +227,26 @@ BEGIN
         );
 
     REGIN_EM <=
-        Regout_DE(149) & --NOP
-        Regout_DE(139) & -- SwapForward
-        Regout_DE(138) & -- call_stack_ptr
-        Regout_DE(137) & -- free
-        Regout_DE(136) & -- protect
-        Regout_DE(135) & -- Mem_rd
-        Regout_DE(134) & -- Mem_wr
-        Regout_DE(133) & -- WB
-        Regout_DE(132) & -- WB_2
-        Regout_DE(131 DOWNTO 130) & -- WB src
-        Regout_DE(127) & -- stack ptr select
-        Regout_DE(126) & -- stack ptr update
-        Excute_Input &
-        Regout_DE(100 DOWNTO 69) &
-        Excute_Result &
-        Regout_DE(64 DOWNTO 33) &
-        Regout_DE(109 DOWNTO 101)
+        Regout_DE(149) & --NOP => 149
+        Regout_DE(139) & -- SwapForward => 148
+        Regout_DE(138) & -- call_stack_ptr => 147
+        Regout_DE(137) & -- free => 146
+        Regout_DE(136) & -- protect => 145
+        Regout_DE(135) & -- Mem_rd => 144
+        Regout_DE(134) & -- Mem_wr => 143
+        Regout_DE(133) & -- WB => 142
+        Regout_DE(132) & -- WB_2 => 141 
+        Regout_DE(131 DOWNTO 130) & -- WB src => 139 - 140
+        Regout_DE(127) & -- stack ptr select => 138
+        Regout_DE(126) & -- stack ptr update => 137
+        Excute_Input & -- 105 - 136
+        Regout_DE(100 DOWNTO 69) & -- PCVal => 73 - 104
+        Excute_Result & -- 41 - 72
+        Regout_DE(64 DOWNTO 33) & --Operand1 => 9 - 40
+        Regout_DE(109 DOWNTO 101) -- Rdst/Rsrc1/Rsrc2 => 0 - 8 
         ;
     REG_EM : ENTITY work.Reg GENERIC MAP(
-        151) PORT MAP(
+        150) PORT MAP(
         Clk => clk,
         Input => REGIN_EM,
         Output => REGOUT_EM,
@@ -249,27 +254,53 @@ BEGIN
         );
 
     M : ENTITY work.Mem_Stage PORT MAP(
-        call_sp => REGOUT_EM(138),
-        sp_sel => REGOUT_EM(127),
-        free => REGOUT_EM(137),
-        protect => REGOUT_EM(136),
-        mem_write => REGOUT_EM(134),
-        mem_read => REGOUT_EM(135),
-        sp => REGOUT_EM(100 DOWNTO 69),
+        call_sp => REGOUT_EM(147),
+        sp_sel => REGOUT_EM(138),
+        free => REGOUT_EM(146),
+        protect => REGOUT_EM(145),
+        mem_write => REGOUT_EM(143),
+        mem_read => REGOUT_EM(144),
+        SPoperation => REGOUT_EM(147),
+        SPOrSPNext => REGOUT_EM(138) AND REGOUT_MW(169)
+        sp => SPout,
         clk => clk,
-        pc => REGOUT_EM(68 DOWNTO 33),
-        alu_out => ALU_output,
-        op_1 => REGOUT_EM(32 DOWNTO 1),
-        mem_data => out_port
+        pc => REGOUT_EM(104 DOWNTO 73),
+        alu_out => REGOUT_EM(72 DOWNTO 41),
+        op_1 => REGOUT_EM(40 DOWNTO 9),
+        ForwardingSP => REGOUT_MW(136 DOWNTO 105) --The next stage Sp value
+        mem_data => MemDataOut,
+        SPOut => SPNextVal
         );
+
+    REGIN_MW <=
+        Regout_EM(149) & --NOP => 175
+        Regout_EM(148) & -- SwapForward => 174
+        Regout_EM(142) & -- WB => 173
+        Regout_EM(141) & -- WB_2 => 172
+        Regout_EM(140 DOWNTO 139) & -- WB src =>  171 - 170 
+        Regout_EM(138) & -- stack ptr select => 169
+        REGOUT_EM(136 DOWNTO 105) & --Alu Input 1 => 168 - 137
+        SPNextVal & -- 136 - 105
+        MemDataOut & -- 104 - 73 
+        REGOUT_EM(72 DOWNTO 41) & --ALU_output => 72 - 41
+        REGOUT_EM(8 DOWNTO 0) & -- Rdst/Rsrc1/Rsrc2 => 40 - 32
+        REGOUT_EM(40 DOWNTO 9); --Operand1 => 31 - 0 
 
     REG_MW : ENTITY work.Reg GENERIC MAP(
         151) PORT MAP(
         Clk => clk,
-        Input => REGIN_EM,
-        Output => Regout_DE,
+        Input => REGIN_MW,
+        Output => Regout_MW,
         Rst => reset
         );
 
-
+    WB_Stage : ENTITY work.WriteBackStage
+        PORT (
+            clk => clk
+            wbsrc => Regout_MW(171 DOWNTO 170), --
+            memdata => Regout_MW(104 DOWNTO 73), --
+            aludata => Regout_MW(72 DOWNTO 41), --
+            portdata => in_port, --
+            wbdata => Rdst_WB_data--
+        );
 END ARCHITECTURE Arch_Quantum_Pipe;
