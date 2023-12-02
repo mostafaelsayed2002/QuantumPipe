@@ -16,7 +16,7 @@ ENTITY FetchingStage IS
 END FetchingStage;
 
 ARCHITECTURE FetchingStageArch OF FetchingStage IS
-    SIGNAL pc : STD_LOGIC_VECTOR(31 DOWNTO 0);
+    SIGNAL pc : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL insout : STD_LOGIC_VECTOR(15 DOWNTO 0);
 
     COMPONENT InstructionMemory
@@ -38,17 +38,18 @@ BEGIN
 
     PROCESS (clk)
         VARIABLE pcaddoperand : INTEGER := 0;
-        VARIABLE nextpc : STD_LOGIC_VECTOR(31 DOWNTO 0) := (others => '0');
+        VARIABLE nextpc : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     BEGIN
         IF rising_edge(clk) THEN
 
             IF fixpc = '1' THEN
                 nextpc := pc;
             ELSE
-                nextpc := STD_LOGIC_VECTOR(unsigned(pc) + 1);
+                nextpc := pc;
+                nextpc := STD_LOGIC_VECTOR((unsigned(nextpc)) + 1);
             END IF;
 
-            IF jmpflag = '1' THEN
+            IF jmpflag = '0' THEN
                 pc <= nextpc;
             ELSE
                 pc <= jmplocation;
