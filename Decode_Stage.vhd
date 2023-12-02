@@ -15,7 +15,14 @@ ENTITY Decode_Stage IS
         Data_R1 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
         Data_R2 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
         jmp_Flag : OUT STD_LOGIC;
-        Zero_Flag : OUT STD_LOGIC
+        Zero_Flag : OUT STD_LOGIC;
+        Neg_Flag : OUT STD_LOGIC;
+        Carry_Flag : OUT STD_LOGIC;
+        SPin : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+        SPout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+        CCRin : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+        SPWriteSignal : IN STD_LOGIC; -- '0' Read / '1' Write
+        CCRWriteSignal : IN STD_LOGIC_VECTOR(2 DOWNTO 0) -- '0' Read / '1' Write
     );
 END ENTITY Decode_Stage;
 ARCHITECTURE Decode_Stage_Arch OF Decode_Stage IS
@@ -95,18 +102,21 @@ BEGIN
         Rout2 => Data_R2,
         Rin1 => WB1_data,
         Rin2 => WB2_data,
-        SPin => x"00000000",
-        CCRin => "000",
+        SPin => SPin,
+        SPout => SPout,
+        CCRin => CCRin,
         CCRout => CCR_Temp,
         WB1_Address => WB1_Address,
         WB2_Address => WB2_Address,
         WB1_Signal => WB1_Signal,
         WB2_Signal => WB2_Signal,
-        SPWriteSignal => '0',
-        CCRWriteSignal => "000"
+        SPWriteSignal => SPWriteSignal,
+        CCRWriteSignal => CCRWriteSignal
         );
-
     Zero_Flag <= CCR_Temp(0);
+    Neg_Flag <= CCR_Temp(1);
+    Carry_Flag <= CCR_Temp(2);
+
     temp1 <= '1' WHEN ((opCode = "01101") AND (CCR_Temp(0) = '1')) ELSE
         '0';
     temp2 <= '1' WHEN (opCode(4 DOWNTO 1) = "0111") ELSE
