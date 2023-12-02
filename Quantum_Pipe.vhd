@@ -86,6 +86,16 @@ ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
 
     SIGNAL REGIN_MW : STD_LOGIC_VECTOR(175 DOWNTO 0);
     SIGNAL REGOUT_MW : STD_LOGIC_VECTOR(175 DOWNTO 0);
+
+    SIGNAL ORing : STD_LOGIC;
+    SIGNAL anding : STD_LOGIC;
+
+    
+
+
+
+    
+
 BEGIN
     PROCESS
     BEGIN
@@ -110,13 +120,13 @@ BEGIN
         Rst => reset
         );
     --control unit  
-
-    M0 : MUX_2_1 GENERIC MAP(
+    ORing <= Regout_DE(148) or (Regout_DE(148) and Regout_DE(0)) or REGOUT_EM(149)  or Regout_MW(175);
+    M0 : ENTITY work.MUX_2_1 GENERIC MAP(
         5) PORT MAP(
-        Input_1 => Regout_FD(15 DOWNTO 11),
-        Input_2 => "00000",
-        SELECT => OR(),
-        Output => OPCODE_OR_NOP
+        a => Regout_FD(15 DOWNTO 11),
+        b => "00000",
+        sel => ORing,
+        y => OPCODE_OR_NOP
     );
 
     CU : ENTITY work.ControlUnit PORT MAP(
@@ -157,17 +167,17 @@ BEGIN
         Zero_Flag => zero_flag,
         Neg_Flag => Neg_Flag,
         Carry_Flag => Carry_Flag,
-        SPin => SPin,
+        SPin => Regout_MW(136 downto 105), --- mostafa
         SPout => SPout,
         CCRin => CCRin,
         SPWriteSignal => SPWriteSignal,
-        CCRWriteSignal => CCRWriteSignal,
+        CCRWriteSignal => CCRWriteSignal
 
         );
 
     RegIN_DE <= D_IMM_Jump & --150
         D_No_Operation & -- 149
-        D_IMM_Effective_Address & -- 148
+        D_IMM_Effective_Address & -- 148 -----mostafa
         D_ALU_Source_Select & -- 147
         D_Forwarding_Source & -- 146
         D_ALU_Op_Code & -- 145-142
@@ -252,7 +262,8 @@ BEGIN
         Output => REGOUT_EM,
         Rst => reset
         );
-
+       
+    anding <= REGOUT_EM(138) AND REGOUT_MW(169);
     M : ENTITY work.Mem_Stage PORT MAP(
         call_sp => REGOUT_EM(147),
         sp_sel => REGOUT_EM(138),
@@ -261,13 +272,13 @@ BEGIN
         mem_write => REGOUT_EM(143),
         mem_read => REGOUT_EM(144),
         SPoperation => REGOUT_EM(147),
-        SPOrSPNext => REGOUT_EM(138) AND REGOUT_MW(169)
+        SPOrSPNext => anding,
         sp => SPout,
         clk => clk,
         pc => REGOUT_EM(104 DOWNTO 73),
         alu_out => REGOUT_EM(72 DOWNTO 41),
         op_1 => REGOUT_EM(40 DOWNTO 9),
-        ForwardingSP => REGOUT_MW(136 DOWNTO 105) --The next stage Sp value
+        ForwardingSP => REGOUT_MW(136 DOWNTO 105), --The next stage Sp value
         mem_data => MemDataOut,
         SPOut => SPNextVal
         );
@@ -293,10 +304,11 @@ BEGIN
         Output => Regout_MW,
         Rst => reset
         );
+        
 
     WB_Stage : ENTITY work.WriteBackStage
-        PORT (
-            clk => clk
+        PORT  map(
+            clk => clk,
             wbsrc => Regout_MW(171 DOWNTO 170), --
             memdata => Regout_MW(104 DOWNTO 73), --
             aludata => Regout_MW(72 DOWNTO 41), --
