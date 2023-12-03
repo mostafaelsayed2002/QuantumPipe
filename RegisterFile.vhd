@@ -6,14 +6,14 @@ ENTITY RegisterFile IS
         Clk : IN STD_LOGIC;
         Rsrc1 : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
         Rsrc2 : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-        Rout1 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-        Rout2 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+        Rout1 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+        Rout2 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
         Rin1 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
         Rin2 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
         SPin : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-        SPout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+        SPout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
         CCRin : IN STD_LOGIC_VECTOR(2 DOWNTO 0); -- 0 => Zero Flag / 1 => Neg Flag / 2 => Carry Flag
-        CCRout : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+        CCRout : OUT STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
         WB1_Address : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
         WB2_Address : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
         WB1_Signal : IN STD_LOGIC;

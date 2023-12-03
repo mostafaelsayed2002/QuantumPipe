@@ -14,7 +14,7 @@ ENTITY DataMemory IS
         addr : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
 
         datain : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-        dataout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+        dataout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (others => '0')
     );
 END DataMemory;
 

@@ -9,92 +9,78 @@ ENTITY Quantum_Pipe IS
         intr : IN STD_LOGIC;
         reset : IN STD_LOGIC;
         --output 
-        out_port : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+        out_port : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0')
     );
 END Quantum_Pipe;
 
 ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
     SIGNAL clk : STD_LOGIC := '0';
-    SIGNAL fixpc : STD_LOGIC :='0';
-    SIGNAL jmpflag : STD_LOGIC :='0';
-    SIGNAL pcval : STD_LOGIC_VECTOR(31 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL instr : STD_LOGIC_VECTOR(15 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL Regout_FD : STD_LOGIC_VECTOR(47 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL RegIN_FD : STD_LOGIC_VECTOR(47 DOWNTO 0):=(OTHERS =>'0');
+    SIGNAL fixpc : STD_LOGIC := '0';
+    SIGNAL jmpflag : STD_LOGIC := '0';
+    SIGNAL pcval : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL instr : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL Regout_FD : STD_LOGIC_VECTOR(47 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL RegIN_FD : STD_LOGIC_VECTOR(47 DOWNTO 0) := (OTHERS => '0');
     --/////////////////////////////////////////
-    SIGNAL WB1_Signal : STD_LOGIC:='0';
-    SIGNAL WB2_Signal : STD_LOGIC:='0';
-    SIGNAL WB1_Address : STD_LOGIC_VECTOR(2 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL WB2_Address : STD_LOGIC_VECTOR(2 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL WB1_data : STD_LOGIC_VECTOR(31 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL WB2_data : STD_LOGIC_VECTOR(31 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL Data_R1 : STD_LOGIC_VECTOR(31 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL Data_R2 : STD_LOGIC_VECTOR(31 DOWNTO 0):=(OTHERS =>'0');
+ 
+    SIGNAL Data_R1 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL Data_R2 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     --/////////////////////////////////////////
-    SIGNAL zero_flag : STD_LOGIC:='0';
-    SIGNAL Regout_DE : STD_LOGIC_VECTOR(150 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL IMM_EA : STD_LOGIC:='0';
-    SIGNAL ALU_SRC : STD_LOGIC:='0';
-    SIGNAL ALU_OP : STD_LOGIC_VECTOR(3 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL Fw_Sel_1 : STD_LOGIC_VECTOR(2 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL Fw_Sel_2 : STD_LOGIC_VECTOR(2 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL Rdst_WB_data : STD_LOGIC_VECTOR(31 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL ALU_output : STD_LOGIC_VECTOR(31 DOWNTO 0):=(OTHERS =>'0');
+    SIGNAL zero_flag : STD_LOGIC := '0';
+    SIGNAL Regout_DE : STD_LOGIC_VECTOR(150 DOWNTO 0) := (OTHERS => '0');
+    -- waithing for making forwarding unit
+    SIGNAL Fw_Sel_1 : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL Fw_Sel_2 : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL Rdst_WB_data : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
 
     -- SIGNAL Rdst_SWAP_Mem : STD_LOGIC_VECTOR(31 DOWNTO 0);
     -- SIGNAL Rdst_SWAP_Ex : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
-    SIGNAL Excute_Result : STD_LOGIC_VECTOR(31 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL Excute_Input : STD_LOGIC_VECTOR(31 DOWNTO 0):=(OTHERS =>'0');
+    SIGNAL Excute_Result : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL Excute_Input : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
 
-    SIGNAL D_IMM_Jump : STD_LOGIC:='0';
-    SIGNAL D_No_Operation : STD_LOGIC:='0';
-    SIGNAL D_IMM_Effective_Address : STD_LOGIC:='0';
-    SIGNAL D_ALU_Source_Select : STD_LOGIC:='0';
-    SIGNAL D_Forwarding_Source : STD_LOGIC:='0';
-    SIGNAL D_ALU_Op_Code : STD_LOGIC_VECTOR(3 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL D_Implicit_Sources : STD_LOGIC_VECTOR(1 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL D_Forwarding_Swap : STD_LOGIC:='0';
-    SIGNAL D_Call_Stack_Pointer : STD_LOGIC:='0';
-    SIGNAL D_Free_Operation : STD_LOGIC:='0';
-    SIGNAL D_Protection_Signal : STD_LOGIC:='0';
-    SIGNAL D_Memory_Read : STD_LOGIC:='0';
-    SIGNAL D_Memory_Write : STD_LOGIC:='0';
-    SIGNAL D_Write_Back : STD_LOGIC:='0';
-    SIGNAL D_Write_Back_2 : STD_LOGIC:='0';
-    SIGNAL D_Write_Back_Source : STD_LOGIC_VECTOR(1 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL D_Port_Read : STD_LOGIC:='0';
-    SIGNAL D_Port_Write : STD_LOGIC:='0';
-    SIGNAL D_Stack_Pointer_Select : STD_LOGIC:='0';
-    SIGNAL D_Stack_Pointer_Update : STD_LOGIC:='0';
-    SIGNAL OPCODE_OR_NOP : STD_LOGIC_VECTOR(4 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL RegIN_DE : STD_LOGIC_VECTOR(150 DOWNTO 0):=(OTHERS =>'0');
+    SIGNAL D_IMM_Jump : STD_LOGIC := '0';
+    SIGNAL D_No_Operation : STD_LOGIC := '0';
+    SIGNAL D_IMM_Effective_Address : STD_LOGIC := '0';
+    SIGNAL D_ALU_Source_Select : STD_LOGIC := '0';
+    SIGNAL D_Forwarding_Source : STD_LOGIC := '0';
+    SIGNAL D_ALU_Op_Code : STD_LOGIC_VECTOR(3 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL D_Implicit_Sources : STD_LOGIC_VECTOR(1 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL D_Forwarding_Swap : STD_LOGIC := '0';
+    SIGNAL D_Call_Stack_Pointer : STD_LOGIC := '0';
+    SIGNAL D_Free_Operation : STD_LOGIC := '0';
+    SIGNAL D_Protection_Signal : STD_LOGIC := '0';
+    SIGNAL D_Memory_Read : STD_LOGIC := '0';
+    SIGNAL D_Memory_Write : STD_LOGIC := '0';
+    SIGNAL D_Write_Back : STD_LOGIC := '0';
+    SIGNAL D_Write_Back_2 : STD_LOGIC := '0';
+    SIGNAL D_Write_Back_Source : STD_LOGIC_VECTOR(1 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL D_Port_Read : STD_LOGIC := '0';
+    SIGNAL D_Port_Write : STD_LOGIC := '0';
+    SIGNAL D_Stack_Pointer_Select : STD_LOGIC := '0';
+    SIGNAL D_Stack_Pointer_Update : STD_LOGIC := '0';
+    SIGNAL OPCODE_OR_NOP : STD_LOGIC_VECTOR(4 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL RegIN_DE : STD_LOGIC_VECTOR(150 DOWNTO 0) := (OTHERS => '0');
 
-    SIGNAL REGIN_EM : STD_LOGIC_VECTOR(149 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL REGOUT_EM : STD_LOGIC_VECTOR(149 DOWNTO 0):=(OTHERS =>'0');
+    SIGNAL REGIN_EM : STD_LOGIC_VECTOR(149 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL REGOUT_EM : STD_LOGIC_VECTOR(149 DOWNTO 0) := (OTHERS => '0');
 
-    SIGNAL Neg_Flag : STD_LOGIC:='0';
-    SIGNAL Carry_Flag : STD_LOGIC:='0';
-    SIGNAL SPin : STD_LOGIC_VECTOR(31 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL SPout : STD_LOGIC_VECTOR(31 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL CCRin : STD_LOGIC_VECTOR(2 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL SPWriteSignal : STD_LOGIC:='0';
-    SIGNAL CCRWriteSignal : STD_LOGIC_VECTOR(2 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL SPNextVal : STD_LOGIC_VECTOR(31 DOWNTO 0):=(OTHERS =>'0');
+    SIGNAL Neg_Flag : STD_LOGIC := '0';
+    SIGNAL Carry_Flag : STD_LOGIC := '0';
+    SIGNAL SPin : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL SPout : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL CCRin : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL SPWriteSignal : STD_LOGIC := '0';
+    SIGNAL CCRWriteSignal : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL SPNextVal : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
 
-    SIGNAL MemDataOut : STD_LOGIC_VECTOR(31 DOWNTO 0):=(OTHERS =>'0');
+    SIGNAL MemDataOut : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
 
-    SIGNAL REGIN_MW : STD_LOGIC_VECTOR(175 DOWNTO 0):=(OTHERS =>'0');
-    SIGNAL REGOUT_MW : STD_LOGIC_VECTOR(175 DOWNTO 0) :=(OTHERS =>'0');
+    SIGNAL REGIN_MW : STD_LOGIC_VECTOR(175 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL REGOUT_MW : STD_LOGIC_VECTOR(175 DOWNTO 0) := (OTHERS => '0');
 
-    SIGNAL ORing : STD_LOGIC:='0';
-    SIGNAL anding : STD_LOGIC:='0';
-
-    
-
-
-
-
+    SIGNAL ORing : STD_LOGIC := '0';
+    SIGNAL anding : STD_LOGIC := '0';
 
 BEGIN
     PROCESS
@@ -111,7 +97,8 @@ BEGIN
         instr => instr
         );
 
-    RegIN_FD <= pcval & instr;
+    RegIN_FD <= pcval & -- 47 => 16 
+        instr; -- 15 => 0
     REG_FD : ENTITY work.Reg GENERIC MAP(
         48) PORT MAP(
         Clk => clk,
@@ -120,14 +107,14 @@ BEGIN
         Rst => reset
         );
     --control unit  
-    ORing <= Regout_DE(148) or (Regout_DE(148) and Regout_DE(0)) or REGOUT_EM(149)  or Regout_MW(175);
+    ORing <= Regout_DE(150) OR (Regout_DE(150) AND Regout_DE(0)) OR REGOUT_EM(149) OR Regout_MW(175);
     M0 : ENTITY work.MUX_2_1 GENERIC MAP(
         5) PORT MAP(
         a => Regout_FD(15 DOWNTO 11),
         b => "00000",
         sel => ORing,
         y => OPCODE_OR_NOP
-    );
+        );
 
     CU : ENTITY work.ControlUnit PORT MAP(
         Op_Code => OPCODE_OR_NOP,
@@ -167,7 +154,7 @@ BEGIN
         Zero_Flag => zero_flag,
         Neg_Flag => Neg_Flag,
         Carry_Flag => Carry_Flag,
-        SPin => Regout_MW(136 downto 105), --- mostafa
+        SPin => Regout_MW(136 DOWNTO 105), --- mostafa
         SPout => SPout,
         CCRin => CCRin,
         SPWriteSignal => SPWriteSignal,
@@ -262,7 +249,7 @@ BEGIN
         Output => REGOUT_EM,
         Rst => reset
         );
-       
+
     anding <= REGOUT_EM(138) AND REGOUT_MW(169);
     M : ENTITY work.Mem_Stage PORT MAP(
         call_sp => REGOUT_EM(147),
@@ -304,10 +291,8 @@ BEGIN
         Output => Regout_MW,
         Rst => reset
         );
-        
-
     WB_Stage : ENTITY work.WriteBackStage
-        PORT  map(
+        PORT MAP(
             clk => clk,
             wbsrc => Regout_MW(171 DOWNTO 170), --
             memdata => Regout_MW(104 DOWNTO 73), --

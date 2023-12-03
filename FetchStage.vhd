@@ -9,8 +9,8 @@ ENTITY FetchingStage IS
         jmpflag : IN STD_LOGIC; -- control unit
         jmplocation : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
 
-        pcval : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-        instr : OUT STD_LOGIC_VECTOR(15 DOWNTO 0)
+        pcval : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+        instr : OUT STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0')
 
     );
 END FetchingStage;
@@ -56,7 +56,7 @@ BEGIN
             END IF;
 
             pcval <= nextpc;
-        
+
         END IF;
     END PROCESS;
     instr <= insout;

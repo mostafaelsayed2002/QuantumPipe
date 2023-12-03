@@ -21,8 +21,8 @@ ENTITY Mem_Stage IS
         op_1 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
         ForwardingSP : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
         --output
-        mem_data : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-        SPOut : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+        mem_data : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+        SPOut : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0')
     );
 END Mem_Stage;
 
