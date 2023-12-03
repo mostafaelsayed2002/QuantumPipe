@@ -56,8 +56,8 @@ BEGIN
             END IF;
 
             pcval <= nextpc;
-            instr <= insout;
-
+        
         END IF;
     END PROCESS;
+    instr <= insout;
 END ARCHITECTURE; -- FetchingStageArch

@@ -4,26 +4,26 @@ USE ieee.std_logic_1164.ALL;
 ENTITY ControlUnit IS
     PORT (
         Op_Code : IN STD_LOGIC_VECTOR(4 DOWNTO 0);
-        IMM_Jump : OUT STD_LOGIC; -- Indicates whether an immediate jump is to be performed.
-        No_Operation : OUT STD_LOGIC; -- Signifies a no-operation condition.
-        IMM_Effective_Address : OUT STD_LOGIC; -- Relates to the use of an immediate value for an effective address.
-        ALU_Source_Select : OUT STD_LOGIC; -- Denotes the source selection for the Arithmetic Logic Unit (ALU).
-        Forwarding_Source : OUT STD_LOGIC; -- Represents the source for forwarding data.
-        ALU_Op_Code : OUT STD_LOGIC_VECTOR(3 DOWNTO 0); -- Specifies the operation code for the ALU.
-        Implicit_Sources : OUT STD_LOGIC_VECTOR(1 DOWNTO 0); -- Indicates the use of implicit sources.
-        Forwarding_Swap : OUT STD_LOGIC; -- Suggests swapping of forwarding sources.
-        Call_Stack_Pointer : OUT STD_LOGIC; -- Signifies a call operation on the stack pointer.
-        Free_Operation : OUT STD_LOGIC; -- Represents a free operation.
-        Protection_Signal : OUT STD_LOGIC; -- Indicates a protection condition.
-        Memory_Read : OUT STD_LOGIC; -- Denotes a memory read operation.
-        Memory_Write : OUT STD_LOGIC; -- Denotes a memory write operation.
-        Write_Back : OUT STD_LOGIC; -- Signifies a write-back operation.
-        Write_Back_2 : OUT STD_LOGIC; -- A secondary write-back operation.
-        Write_Back_Source : OUT STD_LOGIC_VECTOR(1 DOWNTO 0); -- Specifies the source for write-back.
-        Port_Read : OUT STD_LOGIC; -- Signifies a port read operation.
-        Port_Write : OUT STD_LOGIC; -- Denotes a port write operation.
-        Stack_Pointer_Select : OUT STD_LOGIC; -- Indicates the selection of the stack pointer.
-        Stack_Pointer_Update : OUT STD_LOGIC -- Denotes an update operation on the stack pointer.
+        IMM_Jump : OUT STD_LOGIC :='0' ; -- Indicates whether an immediate jump is to be performed.
+        No_Operation : OUT STD_LOGIC :='0'; -- Signifies a no-operation condition.
+        IMM_Effective_Address : OUT STD_LOGIC :='0'; -- Relates to the use of an immediate value for an effective address.
+        ALU_Source_Select : OUT STD_LOGIC :='0'; -- Denotes the source selection for the Arithmetic Logic Unit (ALU).
+        Forwarding_Source : OUT STD_LOGIC :='0'; -- Represents the source for forwarding data.
+        ALU_Op_Code : OUT STD_LOGIC_VECTOR(3 DOWNTO 0) := "0000"; -- Specifies the operation code for the ALU.
+        Implicit_Sources : OUT STD_LOGIC_VECTOR(1 DOWNTO 0) :="00"; -- Indicates the use of implicit sources.
+        Forwarding_Swap : OUT STD_LOGIC :='0'; -- Suggests swapping of forwarding sources.
+        Call_Stack_Pointer : OUT STD_LOGIC :='0'; -- Signifies a call operation on the stack pointer.
+        Free_Operation : OUT STD_LOGIC :='0'; -- Represents a free operation.
+        Protection_Signal : OUT STD_LOGIC :='0'; -- Indicates a protection condition.
+        Memory_Read : OUT STD_LOGIC :='0'; -- Denotes a memory read operation.
+        Memory_Write : OUT STD_LOGIC :='0'; -- Denotes a memory write operation.
+        Write_Back : OUT STD_LOGIC :='0'; -- Signifies a write-back operation.
+        Write_Back_2 : OUT STD_LOGIC :='0'; -- A secondary write-back operation.
+        Write_Back_Source : OUT STD_LOGIC_VECTOR(1 DOWNTO 0) :="00"; -- Specifies the source for write-back.
+        Port_Read : OUT STD_LOGIC :='0'; -- Signifies a port read operation.
+        Port_Write : OUT STD_LOGIC :='0'; -- Denotes a port write operation.
+        Stack_Pointer_Select : OUT STD_LOGIC :='0'; -- Indicates the selection of the stack pointer.
+        Stack_Pointer_Update : OUT STD_LOGIC :='0' -- Denotes an update operation on the stack pointer.
     );
 END ENTITY ControlUnit;
 
