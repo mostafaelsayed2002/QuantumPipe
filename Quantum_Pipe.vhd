@@ -86,7 +86,7 @@ ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
 BEGIN
     PROCESS
     BEGIN
-        WAIT FOR 10 ns;
+        WAIT FOR 15 ns;
         clk <= NOT clk;
     END PROCESS;
     F : ENTITY work.FetchingStage PORT MAP(
@@ -293,7 +293,7 @@ BEGIN
         Output => Regout_MW,
         Rst => reset
         );
-    
+
     WB_Stage : ENTITY work.WriteBackStage
         PORT MAP(
             wbsrc => Regout_MW(171 DOWNTO 170), --

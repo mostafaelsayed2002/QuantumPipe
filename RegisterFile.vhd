@@ -24,20 +24,18 @@ ENTITY RegisterFile IS
 END ENTITY RegisterFile;
 
 ARCHITECTURE RegisterFileArch OF RegisterFile IS
+    SIGNAL R0 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL R1 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL R2 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL R3 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL R4 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL R5 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL R6 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL R7 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL SP : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL CCR : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
 BEGIN
     PROCESS (Clk)
-        VARIABLE R0 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-        VARIABLE R1 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-        VARIABLE R2 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-        VARIABLE R3 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-        VARIABLE R4 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-        VARIABLE R5 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-        VARIABLE R6 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-        VARIABLE R7 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-        VARIABLE SP : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-        VARIABLE CCR : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
-        VARIABLE Rout1_Temp : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-        VARIABLE Rout2_Temp : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
 
     BEGIN
         IF rising_edge(Clk) THEN
@@ -45,21 +43,21 @@ BEGIN
 
                 CASE WB1_Address IS
                     WHEN "000" =>
-                        R0 := Rin1;
+                        R0 <= Rin1;
                     WHEN "001" =>
-                        R1 := Rin1;
+                        R1 <= Rin1;
                     WHEN "010" =>
-                        R2 := Rin1;
+                        R2 <= Rin1;
                     WHEN "011" =>
-                        R3 := Rin1;
+                        R3 <= Rin1;
                     WHEN "100" =>
-                        R4 := Rin1;
+                        R4 <= Rin1;
                     WHEN "101" =>
-                        R5 := Rin1;
+                        R5 <= Rin1;
                     WHEN "110" =>
-                        R6 := Rin1;
+                        R6 <= Rin1;
                     WHEN OTHERS =>
-                        R7 := Rin1;
+                        R7 <= Rin1;
                 END CASE;
             END IF;
 
@@ -67,97 +65,90 @@ BEGIN
 
                 CASE WB2_Address IS
                     WHEN "000" =>
-                        R0 := Rin2;
+                        R0 <= Rin2;
                     WHEN "001" =>
-                        R1 := Rin2;
+                        R1 <= Rin2;
                     WHEN "010" =>
-                        R2 := Rin2;
+                        R2 <= Rin2;
                     WHEN "011" =>
-                        R3 := Rin2;
+                        R3 <= Rin2;
                     WHEN "100" =>
-                        R4 := Rin2;
+                        R4 <= Rin2;
                     WHEN "101" =>
-                        R5 := Rin2;
+                        R5 <= Rin2;
                     WHEN "110" =>
-                        R6 := Rin2;
+                        R6 <= Rin2;
                     WHEN OTHERS =>
-                        R7 := Rin2;
+                        R7 <= Rin2;
                 END CASE;
             END IF;
 
             IF (SPWriteSignal = '1') THEN
-                SP := SPin;
+                SP <= SPin;
             END IF;
 
             IF (CCRWriteSignal(0) = '1') THEN
-                CCR(0) := CCRin(0);
+                CCR(0) <= CCRin(0);
             END IF;
 
             IF (CCRWriteSignal(1) = '1') THEN
-                CCR(1) := CCRin(1);
+                CCR(1) <= CCRin(1);
             END IF;
 
             IF (CCRWriteSignal(2) = '1') THEN
-                CCR(2) := CCRin(2);
+                CCR(2) <= CCRin(2);
             END IF;
         END IF;
+    END PROCESS;
 
+    PROCESS (Clk)
+
+    BEGIN
         IF falling_edge(Clk) THEN
             CASE Rsrc1 IS
                 WHEN "000" =>
-                    Rout1_Temp := R0;
+                    Rout1 <= R0;
                 WHEN "001" =>
-                    Rout1_Temp := R1;
+                    Rout1 <= R1;
                 WHEN "010" =>
-                    Rout1_Temp := R2;
+                    Rout1 <= R2;
                 WHEN "011" =>
-                    Rout1_Temp := R3;
+                    Rout1 <= R3;
                 WHEN "100" =>
-                    Rout1_Temp := R4;
+                    Rout1 <= R4;
                 WHEN "101" =>
-                    Rout1_Temp := R5;
+                    Rout1 <= R5;
                 WHEN "110" =>
-                    Rout1_Temp := R6;
+                    Rout1 <= R6;
                 WHEN OTHERS =>
-                    Rout1_Temp := R7;
+                    Rout1 <= R7;
             END CASE;
 
             CASE Rsrc2 IS
                 WHEN "000" =>
-                    Rout2_Temp := R0;
+                    Rout2 <= R0;
                 WHEN "001" =>
-                    Rout2_Temp := R1;
+                    Rout2 <= R1;
                 WHEN "010" =>
-                    Rout2_Temp := R2;
+                    Rout2 <= R2;
                 WHEN "011" =>
-                    Rout2_Temp := R3;
+                    Rout2 <= R3;
                 WHEN "100" =>
-                    Rout2_Temp := R4;
+                    Rout2 <= R4;
                 WHEN "101" =>
-                    Rout2_Temp := R5;
+                    Rout2 <= R5;
                 WHEN "110" =>
-                    Rout2_Temp := R6;
+                    Rout2 <= R6;
                 WHEN OTHERS =>
-                    Rout2_Temp := R7;
+                    Rout2 <= R7;
             END CASE;
 
-            IF (Rout1_Temp = x"00000000") THEN
-                CCR(0) := '1';
-            ELSIF (Rout2_Temp = x"00000000") THEN
-                CCR(0) := '1';
-            ELSE
-                CCR(0) := '0';
-            END IF;
-
-            Rout1 <= Rout1_Temp;
-            Rout2 <= Rout2_Temp;
-
-            SPout <= SP;
-
-            CCRout(0) <= CCR(0);
-            CCRout(1) <= CCR(1);
-            CCRout(2) <= CCR(2);
         END IF;
 
     END PROCESS;
+    SPout <= SP;
+
+    CCRout(0) <= CCR(0);
+    CCRout(1) <= CCR(1);
+    CCRout(2) <= CCR(2);
 END RegisterFileArch;

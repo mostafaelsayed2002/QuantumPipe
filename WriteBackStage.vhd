@@ -14,19 +14,10 @@ END WriteBackStage;
 ARCHITECTURE WriteBackStageArch OF WriteBackStage IS
 
 BEGIN
-    PROCESS (wbsrc, memdata, aludata, portdata)
-    BEGIN
-        CASE to_integer(unsigned(wbsrc)) IS
-            WHEN 0 =>
-                wbdata <= memdata;
-            WHEN 1 =>
-                wbdata <= aludata;
-            WHEN 2 =>
-                wbdata <= portdata;
-            WHEN OTHERS =>
-                wbdata <= X"0000_0000";
-        END CASE;
-
-    END PROCESS;
+    WITH (wbsrc) SELECT
+    wbdata <= memdata WHEN "00",
+        aludata WHEN "01",
+        portdata WHEN "10",
+        (OTHERS => '0') WHEN OTHERS;
 
 END WriteBackStageArch; -- WriteBackStage
