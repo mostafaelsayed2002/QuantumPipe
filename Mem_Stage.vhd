@@ -22,7 +22,9 @@ ENTITY Mem_Stage IS
         ForwardingSP : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
         --output
         mem_data : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-        SPOut : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0')
+        SPOut : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+        mem_address : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0')
+
     );
 END Mem_Stage;
 
@@ -61,6 +63,7 @@ BEGIN
         y => data
         );
 
+    mem_address <= address;
     mem : ENTITY work.DataMemory PORT MAP(
         clk => clk,
         memread => mem_read,

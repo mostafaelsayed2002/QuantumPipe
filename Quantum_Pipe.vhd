@@ -22,7 +22,7 @@ ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
     SIGNAL Regout_FD : STD_LOGIC_VECTOR(47 DOWNTO 0) := (OTHERS => '0');
     SIGNAL RegIN_FD : STD_LOGIC_VECTOR(47 DOWNTO 0) := (OTHERS => '0');
     --/////////////////////////////////////////
- 
+
     SIGNAL Data_R1 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL Data_R2 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     --/////////////////////////////////////////
@@ -82,6 +82,7 @@ ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
     SIGNAL ORing : STD_LOGIC := '0';
     SIGNAL anding : STD_LOGIC := '0';
 
+    SIGNAL Addddddddddr : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
 BEGIN
     PROCESS
     BEGIN
@@ -267,7 +268,8 @@ BEGIN
         op_1 => REGOUT_EM(40 DOWNTO 9),
         ForwardingSP => REGOUT_MW(136 DOWNTO 105), --The next stage Sp value
         mem_data => MemDataOut,
-        SPOut => SPNextVal
+        SPOut => SPNextVal,
+        mem_address => Addddddddddr
         );
 
     REGIN_MW <=
@@ -291,9 +293,9 @@ BEGIN
         Output => Regout_MW,
         Rst => reset
         );
+    
     WB_Stage : ENTITY work.WriteBackStage
         PORT MAP(
-            clk => clk,
             wbsrc => Regout_MW(171 DOWNTO 170), --
             memdata => Regout_MW(104 DOWNTO 73), --
             aludata => Regout_MW(72 DOWNTO 41), --
