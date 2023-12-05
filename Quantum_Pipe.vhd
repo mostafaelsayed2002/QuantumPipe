@@ -3,13 +3,9 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
 ENTITY Quantum_Pipe IS
-    PORT (
-        --inputs
-        in_port : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+    PORT (     
         intr : IN STD_LOGIC;
-        reset : IN STD_LOGIC;
-        --output 
-        out_port : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0')
+        reset : IN STD_LOGIC   
     );
 END Quantum_Pipe;
 
@@ -21,7 +17,10 @@ ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
     SIGNAL instr : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
     SIGNAL Regout_FD : STD_LOGIC_VECTOR(47 DOWNTO 0) := (OTHERS => '0');
     SIGNAL RegIN_FD : STD_LOGIC_VECTOR(47 DOWNTO 0) := (OTHERS => '0');
-    --/////////////////////////////////////////
+    --//////////////////Port///////////////////////
+    SIGNAL out_port : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL in_port :  STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0'); 
+    --////////////////////
 
     SIGNAL Data_R1 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL Data_R2 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
@@ -62,8 +61,8 @@ ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
     SIGNAL OPCODE_OR_NOP : STD_LOGIC_VECTOR(4 DOWNTO 0) := (OTHERS => '0');
     SIGNAL RegIN_DE : STD_LOGIC_VECTOR(150 DOWNTO 0) := (OTHERS => '0');
 
-    SIGNAL REGIN_EM : STD_LOGIC_VECTOR(149 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL REGOUT_EM : STD_LOGIC_VECTOR(149 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL REGIN_EM : STD_LOGIC_VECTOR(150 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL REGOUT_EM : STD_LOGIC_VECTOR(150 DOWNTO 0) := (OTHERS => '0');
 
     SIGNAL Neg_Flag : STD_LOGIC := '0';
     SIGNAL Carry_Flag : STD_LOGIC := '0';
@@ -76,8 +75,8 @@ ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
 
     SIGNAL MemDataOut : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
 
-    SIGNAL REGIN_MW : STD_LOGIC_VECTOR(175 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL REGOUT_MW : STD_LOGIC_VECTOR(175 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL REGIN_MW : STD_LOGIC_VECTOR(176 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL REGOUT_MW : STD_LOGIC_VECTOR(176 DOWNTO 0) := (OTHERS => '0');
 
     SIGNAL ORing : STD_LOGIC := '0';
     SIGNAL anding : STD_LOGIC := '0';
@@ -179,8 +178,8 @@ BEGIN
         D_Write_Back & --133
         D_Write_Back_2 & --132
         D_Write_Back_Source & -- 131-130 
-        D_Port_Read & --129
-        D_Port_Write & --128
+        D_Port_Read & --129 --------
+        D_Port_Write & --128 --------
         D_Stack_Pointer_Select & --127
         D_Stack_Pointer_Update & --126
         instr & --125 - 110
@@ -190,6 +189,8 @@ BEGIN
         Data_R1 & --64 - 33  
         Data_R2 & --32 - 1
         zero_flag;
+
+ 
 
     REG_DE : ENTITY work.Reg GENERIC MAP(
         151) PORT MAP(
@@ -225,6 +226,7 @@ BEGIN
         );
 
     REGIN_EM <=
+        Regout_DE(129) & --------- read signal port  ----150
         Regout_DE(149) & --NOP => 149
         Regout_DE(139) & -- SwapForward => 148
         Regout_DE(138) & -- call_stack_ptr => 147
@@ -244,7 +246,7 @@ BEGIN
         Regout_DE(109 DOWNTO 101) -- Rdst/Rsrc1/Rsrc2 => 0 - 8 
         ;
     REG_EM : ENTITY work.Reg GENERIC MAP(
-        150) PORT MAP(
+        151) PORT MAP(
         Clk => clk,
         Input => REGIN_EM,
         Output => REGOUT_EM,
@@ -273,6 +275,7 @@ BEGIN
         );
 
     REGIN_MW <=
+        Regout_EM(150) & -------------176 port read
         Regout_EM(149) & --NOP => 175
         Regout_EM(148) & -- SwapForward => 174
         Regout_EM(142) & -- WB => 173
@@ -287,7 +290,7 @@ BEGIN
         REGOUT_EM(40 DOWNTO 9); --Operand1 => 31 - 0 
 
     REG_MW : ENTITY work.Reg GENERIC MAP(
-        176) PORT MAP(
+        177) PORT MAP(
         Clk => clk,
         Input => REGIN_MW,
         Output => Regout_MW,
@@ -305,10 +308,10 @@ BEGIN
 
     io : ENTITY work.io
         PORT MAP(
-            clk  => clk;
-            portread => Reg;
-            portwrite : IN STD_LOGIC;
-            indata : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-            outdata : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+            clk  => clk,
+            portread => Regout_MW(176),
+            portwrite => Regout_DE(128),  
+            indata => out_port,
+            outdata =>in_port
         );
 END ARCHITECTURE Arch_Quantum_Pipe;
