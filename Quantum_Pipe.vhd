@@ -302,4 +302,13 @@ BEGIN
             portdata => in_port, --
             wbdata => Rdst_WB_data--
         );
+
+    io : ENTITY work.io
+        PORT MAP(
+            clk  => clk;
+            portread => Reg;
+            portwrite : IN STD_LOGIC;
+            indata : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+            outdata : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+        );
 END ARCHITECTURE Arch_Quantum_Pipe;
