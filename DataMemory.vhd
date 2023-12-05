@@ -42,7 +42,7 @@ BEGIN
                 helper33(33) := '1';
 
                 ram(to_integer(UNSIGNED(addr(11 DOWNTO 0)))) <= helper33(16 DOWNTO 0);
-                ram(to_integer(UNSIGNED(addr(11 DOWNTO 0))) + 1) <= helper33(33 DOWNTO 17);
+                ram(to_integer(UNSIGNED(helper12))) <= helper33(33 DOWNTO 17);
 
             ELSIF free = '1' THEN
 
@@ -50,7 +50,7 @@ BEGIN
                 helper33(33) := '0';
 
                 ram(to_integer(UNSIGNED(addr(11 DOWNTO 0)))) <= helper33(16 DOWNTO 0);
-                ram(to_integer(UNSIGNED(addr(11 DOWNTO 0))) + 1) <= helper33(33 DOWNTO 17);
+                ram(to_integer(UNSIGNED(helper12))) <= helper33(33 DOWNTO 17);
 
             ELSIF memwrite = '1' THEN
 
@@ -59,11 +59,10 @@ BEGIN
                     helper33(32 DOWNTO 17) := datain(31 DOWNTO 16);
 
                     ram(to_integer(UNSIGNED(addr(11 DOWNTO 0)))) <= helper33(16 DOWNTO 0);
-                    ram(to_integer(UNSIGNED(addr(11 DOWNTO 0))) + 1) <= helper33(33 DOWNTO 17);
+                    ram(to_integer(UNSIGNED(helper12))) <= helper33(33 DOWNTO 17);
                 END IF;
             ELSE
                 helper33(16 DOWNTO 0) := ram(to_integer(UNSIGNED(addr(11 DOWNTO 0))));
-                helper12 := STD_LOGIC_VECTOR(UNSIGNED(addr(11 DOWNTO 0)) + 1);
                 helper33(33 DOWNTO 17) := ram(to_integer(UNSIGNED(helper12)));
 
                 -- 32 to dataout
