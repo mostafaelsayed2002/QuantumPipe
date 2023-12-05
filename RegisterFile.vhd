@@ -38,7 +38,7 @@ BEGIN
     PROCESS (Clk)
 
     BEGIN
-        IF rising_edge(Clk) THEN
+        IF Clk='1' THEN
             IF (WB1_Signal = '1') THEN
 
                 CASE WB1_Address IS
@@ -104,7 +104,7 @@ BEGIN
     PROCESS (Clk)
 
     BEGIN
-        IF falling_edge(Clk) THEN
+        IF  Clk='0' THEN
             CASE Rsrc1 IS
                 WHEN "000" =>
                     Rout1 <= R0;

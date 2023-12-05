@@ -31,7 +31,7 @@ BEGIN
         VARIABLE helper12 : STD_LOGIC_VECTOR(11 DOWNTO 0) := (OTHERS => '0');
 
     BEGIN
-        IF rising_edge(clk) THEN
+        IF falling_edge(clk) THEN
             helper33(16 DOWNTO 0) := ram(to_integer(UNSIGNED(addr(11 DOWNTO 0))));
             helper12 := STD_LOGIC_VECTOR(UNSIGNED(addr(11 DOWNTO 0)) + 1);
             helper33(33 DOWNTO 17) := ram(to_integer(UNSIGNED(helper12)));

@@ -47,6 +47,9 @@ BEGIN
                 Port_Read <= '0';
                 Port_Write <= '0';
                 Stack_Pointer_Select <= '0';
+                Forwarding_Source <= '0';
+                ALU_Source_Select <= '0';
+                
 
             WHEN "00001" => -- RET
                 IMM_Jump <= '1';

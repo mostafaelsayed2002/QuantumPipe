@@ -70,16 +70,20 @@ ARCHITECTURE Decode_Stage_Arch OF Decode_Stage IS
     SIGNAL Mux2_Out : STD_LOGIC_VECTOR(2 DOWNTO 0);
     SIGNAL temp1 : STD_LOGIC;
     SIGNAL temp2 : STD_LOGIC;
+    SIGNAL ORING : STD_LOGIC;
 BEGIN
 
     opCode <= Instruction(15 DOWNTO 11);
     Rdst <= Instruction(10 DOWNTO 8);
     Rsrc1 <= Instruction(7 DOWNTO 5);
     Rsrc2 <= Instruction(4 DOWNTO 2);
-    Mux1_in <= '1' WHEN ((opCode(4 DOWNTO 3) = "11") OR (opCode(4) = '0')) ELSE
+    ORING <= '1' WHEN ((opCode(4 DOWNTO 3) = "11") OR (opCode(4) = '0')) ELSE
         '0';
     Mux2_in <= '1' WHEN ((opCode = "10101") OR (opCode = "10110")) ELSE
         '0';
+
+    Mux1_in <= Mux2_in or ORING;
+        
     Mux1 : ENTITY work.Mux_2_1 GENERIC MAP(3) PORT MAP(
         a => Rsrc1,
         b => Rdst,
@@ -88,8 +92,8 @@ BEGIN
         );
 
     Mux2 : ENTITY work.Mux_2_1 GENERIC MAP(3) PORT MAP(
-        a => Rsrc1,
-        b => Rsrc2,
+        a => Rsrc2,
+        b => Rsrc1,
         sel => Mux2_in,
         y => Mux2_Out
         );
