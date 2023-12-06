@@ -7,7 +7,7 @@ Entity mux_5_3 is
     port(
         a,b,c,d,e: in std_logic_vector(N-1 downto 0);
         s: in std_logic_vector(2 downto 0);
-        y: out std_logic_vector(N-1 downto 0)
+        y: out std_logic_vector(N-1 downto 0):= (others => '0')
     );
 End mux_5_3;
 

@@ -9,7 +9,7 @@ entity mux_2_1 is
     port(
         a,b: in std_logic_vector(N-1 downto 0);
         sel: in std_logic;
-        y: out std_logic_vector(N-1 downto 0)
+        y: out std_logic_vector(N-1 downto 0):= (others => '0')
     );
 end entity;
 

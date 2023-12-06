@@ -3,12 +3,12 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
 ENTITY Reg IS
-    GENERIC (n : integer := 64);
+    GENERIC (n : INTEGER := 64);
     PORT (
-        Clk : IN std_logic;
-        Input : IN std_logic_vector(n-1 DOWNTO 0);
-        Output : OUT std_logic_vector(n-1 DOWNTO 0);
-        Rst : IN std_logic
+        Clk : IN STD_LOGIC;
+        Input : IN STD_LOGIC_VECTOR(n - 1 DOWNTO 0);
+        Output : OUT STD_LOGIC_VECTOR(n - 1 DOWNTO 0) := (OTHERS => '0');
+        Rst : IN STD_LOGIC
     );
 END ENTITY Reg;
 

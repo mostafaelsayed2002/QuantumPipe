@@ -8,29 +8,29 @@ END Mem_Stage_tb;
 ARCHITECTURE behavior OF Mem_Stage_tb IS
     -- Component declarations
     COMPONENT Mem_Stage
-        PORT(
-            call_sp : IN std_logic;
-            sp_sel : IN std_logic;
-            free : IN std_logic;
-            protect : IN std_logic;
-            mem_write : IN std_logic;
-            mem_read : IN std_logic;
-            sp : IN std_logic_vector(31 DOWNTO 0);
-            clk : IN std_logic;
-            pc : IN std_logic_vector(31 DOWNTO 0);
-            alu_out : IN std_logic_vector(31 DOWNTO 0);
-            op_1 : IN std_logic_vector(31 DOWNTO 0);
-            mem_data : OUT std_logic_vector(31 DOWNTO 0)
+        PORT (
+            call_sp : IN STD_LOGIC;
+            sp_sel : IN STD_LOGIC;
+            free : IN STD_LOGIC;
+            protect : IN STD_LOGIC;
+            mem_write : IN STD_LOGIC;
+            mem_read : IN STD_LOGIC;
+            sp : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+            clk : IN STD_LOGIC;
+            pc : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+            alu_out : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+            op_1 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+            mem_data : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0')
         );
     END COMPONENT;
 
     -- Signals for the testbench
-    SIGNAL tb_call_sp, tb_sp_sel, tb_free, tb_protect, tb_mem_write, tb_mem_read, tb_clk : std_logic := '0';
-    SIGNAL tb_sp, tb_pc, tb_alu_out, tb_op_1, tb_mem_data : std_logic_vector(31 DOWNTO 0);
+    SIGNAL tb_call_sp, tb_sp_sel, tb_free, tb_protect, tb_mem_write, tb_mem_read, tb_clk : STD_LOGIC := '0';
+    SIGNAL tb_sp, tb_pc, tb_alu_out, tb_op_1, tb_mem_data : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
 BEGIN
     -- Instantiate the Mem_Stage component
-    uut: Mem_Stage PORT MAP (
+    uut : Mem_Stage PORT MAP(
         call_sp => tb_call_sp,
         sp_sel => tb_sp_sel,
         free => tb_free,
@@ -48,12 +48,12 @@ BEGIN
     -- Clock process
     clk_process : PROCESS
     BEGIN
-        WAIT FOR 2.5 ns;  -- Half of the previous value
+        WAIT FOR 2.5 ns; -- Half of the previous value
         tb_clk <= NOT tb_clk;
     END PROCESS;
 
     -- Stimulus process
-    Stimulus_Process: PROCESS
+    Stimulus_Process : PROCESS
     BEGIN
         -- Initialize inputs
         tb_call_sp <= '0';
@@ -68,8 +68,6 @@ BEGIN
         tb_alu_out <= (OTHERS => '0');
         tb_op_1 <= (OTHERS => '0');
 
-
-        
         WAIT FOR 10 ns;
         tb_pc <= "00010000010000001000000100000010";
         tb_call_sp <= '1';
@@ -79,10 +77,6 @@ BEGIN
         WAIT FOR 10 ns;
         tb_mem_write <= '0';
         tb_mem_read <= '1';
-
-
-
-
         WAIT;
     END PROCESS Stimulus_Process;
 

@@ -11,7 +11,7 @@ entity mux_3_2 is
         b : in std_logic_vector(N-1 downto 0);
         c : in std_logic_vector(N-1 downto 0);
         s : in std_logic_vector(1 downto 0);
-        y : out std_logic_vector(N-1 downto 0)
+        y : out std_logic_vector(N-1 downto 0):= (others => '0')
     );
 end mux_3_2;
 

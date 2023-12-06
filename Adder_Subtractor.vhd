@@ -8,7 +8,7 @@ ENTITY Adder_Subtractor IS
         Input1 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
         Input2 : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
         Enable : IN STD_LOGIC; -- 0 diabled , 1 enabled
-        Result : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+        Result : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0')
     );
 END ENTITY Adder_Subtractor;
 

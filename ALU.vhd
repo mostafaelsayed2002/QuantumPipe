@@ -10,9 +10,9 @@ ENTITY ALU IS
         in1 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
         in2 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
 
-        outp : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+        outp : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
 
-        c_new : OUT STD_LOGIC_VECTOR(2 DOWNTO 0)
+        c_new : OUT STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0')
 
     );
 END ENTITY;

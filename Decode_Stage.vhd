@@ -12,14 +12,14 @@ ENTITY Decode_Stage IS
         WB2_data : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
         WB1_Signal : IN STD_LOGIC;
         WB2_Signal : IN STD_LOGIC;
-        Data_R1 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-        Data_R2 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-        jmp_Flag : OUT STD_LOGIC;
-        Zero_Flag : OUT STD_LOGIC;
-        Neg_Flag : OUT STD_LOGIC;
-        Carry_Flag : OUT STD_LOGIC;
+        Data_R1 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+        Data_R2 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+        jmp_Flag : OUT STD_LOGIC := '0';
+        Zero_Flag : OUT STD_LOGIC := '0';
+        Neg_Flag : OUT STD_LOGIC := '0';
+        Carry_Flag : OUT STD_LOGIC := '0';
         SPin : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-        SPout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+        SPout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
         CCRin : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
         SPWriteSignal : IN STD_LOGIC; -- '0' Read / '1' Write
         CCRWriteSignal : IN STD_LOGIC_VECTOR(2 DOWNTO 0) -- '0' Read / '1' Write
@@ -70,16 +70,20 @@ ARCHITECTURE Decode_Stage_Arch OF Decode_Stage IS
     SIGNAL Mux2_Out : STD_LOGIC_VECTOR(2 DOWNTO 0);
     SIGNAL temp1 : STD_LOGIC;
     SIGNAL temp2 : STD_LOGIC;
+    SIGNAL ORING : STD_LOGIC;
 BEGIN
 
     opCode <= Instruction(15 DOWNTO 11);
     Rdst <= Instruction(10 DOWNTO 8);
     Rsrc1 <= Instruction(7 DOWNTO 5);
     Rsrc2 <= Instruction(4 DOWNTO 2);
-    Mux1_in <= '1' WHEN ((opCode(4 DOWNTO 3) = "11") OR (opCode(4) = '0')) ELSE
+    ORING <= '1' WHEN ((opCode(4 DOWNTO 3) = "11") OR (opCode(4) = '0')) ELSE
         '0';
     Mux2_in <= '1' WHEN ((opCode = "10101") OR (opCode = "10110")) ELSE
         '0';
+
+    Mux1_in <= Mux2_in or ORING;
+        
     Mux1 : ENTITY work.Mux_2_1 GENERIC MAP(3) PORT MAP(
         a => Rsrc1,
         b => Rdst,
@@ -88,8 +92,8 @@ BEGIN
         );
 
     Mux2 : ENTITY work.Mux_2_1 GENERIC MAP(3) PORT MAP(
-        a => Rsrc1,
-        b => Rsrc2,
+        a => Rsrc2,
+        b => Rsrc1,
         sel => Mux2_in,
         y => Mux2_Out
         );

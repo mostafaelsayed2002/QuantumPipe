@@ -14,7 +14,7 @@ ENTITY DataMemory IS
         addr : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
 
         datain : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-        dataout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0)
+        dataout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0')
     );
 END DataMemory;
 
@@ -28,11 +28,13 @@ BEGIN
     PROCESS (clk) IS
         VARIABLE helper33 : STD_LOGIC_VECTOR(33 DOWNTO 0) := (OTHERS => '0');
         VARIABLE helper32 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+        VARIABLE helper12 : STD_LOGIC_VECTOR(11 DOWNTO 0) := (OTHERS => '0');
 
     BEGIN
-        IF rising_edge(clk) THEN
+        IF falling_edge(clk) THEN
             helper33(16 DOWNTO 0) := ram(to_integer(UNSIGNED(addr(11 DOWNTO 0))));
-            helper33(33 DOWNTO 17) := ram(to_integer(UNSIGNED(addr(11 DOWNTO 0))) + 1);
+            helper12 := STD_LOGIC_VECTOR(UNSIGNED(addr(11 DOWNTO 0)) + 1);
+            helper33(33 DOWNTO 17) := ram(to_integer(UNSIGNED(helper12)));
 
             IF protect = '1' THEN
 
@@ -40,7 +42,7 @@ BEGIN
                 helper33(33) := '1';
 
                 ram(to_integer(UNSIGNED(addr(11 DOWNTO 0)))) <= helper33(16 DOWNTO 0);
-                ram(to_integer(UNSIGNED(addr(11 DOWNTO 0))) + 1) <= helper33(33 DOWNTO 17);
+                ram(to_integer(UNSIGNED(helper12))) <= helper33(33 DOWNTO 17);
 
             ELSIF free = '1' THEN
 
@@ -48,7 +50,7 @@ BEGIN
                 helper33(33) := '0';
 
                 ram(to_integer(UNSIGNED(addr(11 DOWNTO 0)))) <= helper33(16 DOWNTO 0);
-                ram(to_integer(UNSIGNED(addr(11 DOWNTO 0))) + 1) <= helper33(33 DOWNTO 17);
+                ram(to_integer(UNSIGNED(helper12))) <= helper33(33 DOWNTO 17);
 
             ELSIF memwrite = '1' THEN
 
@@ -57,11 +59,11 @@ BEGIN
                     helper33(32 DOWNTO 17) := datain(31 DOWNTO 16);
 
                     ram(to_integer(UNSIGNED(addr(11 DOWNTO 0)))) <= helper33(16 DOWNTO 0);
-                    ram(to_integer(UNSIGNED(addr(11 DOWNTO 0))) + 1) <= helper33(33 DOWNTO 17);
+                    ram(to_integer(UNSIGNED(helper12))) <= helper33(33 DOWNTO 17);
                 END IF;
             ELSE
                 helper33(16 DOWNTO 0) := ram(to_integer(UNSIGNED(addr(11 DOWNTO 0))));
-                helper33(33 DOWNTO 17) := ram(to_integer(UNSIGNED(addr(11 DOWNTO 0))) + 1);
+                helper33(33 DOWNTO 17) := ram(to_integer(UNSIGNED(helper12)));
 
                 -- 32 to dataout
                 helper32(15 DOWNTO 0) := helper33(15 DOWNTO 0);
