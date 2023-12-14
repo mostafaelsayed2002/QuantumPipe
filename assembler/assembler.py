@@ -138,10 +138,25 @@ class Assembler:
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description="Assembler For QuantumPipe")
-    parser.add_argument("-i", "--input",  help = "Input code path",              required=True)
-    parser.add_argument("-o", "--output", help = "Output assembled binary code", required=False)
-    # parser.add_argument("-h", "--help",   help = "Print assembler help",         required=False)
+    parser = argparse.ArgumentParser(
+                                     formatter_class=argparse.RawTextHelpFormatter,
+                                    prog="""
+        python3 assembler.py -i <input_code_path> -o <output_binary_code_path>
+
+        Features:
+        - Supports comments with #
+        - Supports hexadecimal starts with 0x and decimal values
+        - Supports whitespaces
+        - Outputs a file with the valid code
+        - Outputs a file with the binary code that can be loaded into the memory 4096 words
+        - Supports all the instructions in the ISA
+    
+        Author: @Walid-Kh
+        """)
+    parser.add_argument("-i", "--input", help="Input code path (required)", required=True)
+    parser.add_argument("-o", "--output",help="Output assembled binary code", required=False)
+
+
 
     args = parser.parse_args()
     
