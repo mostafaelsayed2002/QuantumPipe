@@ -1,0 +1,32 @@
+# nop
+# ret
+# rti
+
+
+# NoT r1
+# NEg r2
+# inc r3
+# dec r4
+# out r5
+# in r6
+# push r7
+# pop r0
+
+# swap r1, r2
+# cmp r3, r4
+
+
+# add r1, r2, r3
+# sub r4, r5, r6
+# and r7, r0, r1
+# or r2, r3, r4
+# xor r5, r6, r7
+
+adii r1, r2, 10
+
+# bitset r1, 4
+# rcl r2, 0x00454 # hello world
+# rcr r3, 0x00345
+# ldm r4, 0x00FFA
+# ldd r5, 0x00FA0
+# std r6, 0x00FA9
