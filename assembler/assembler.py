@@ -2,47 +2,66 @@ from isa import *
 import argparse
 import re
 import sys
+import os
 
 class Assembler: 
 
     @staticmethod
+    def find_error_line(line: str, input_code: list) -> int: 
+        for i, code in enumerate(input_code): 
+            if code.startswith(line):
+                return i + 1
+        return -1
+
+    @staticmethod
     def assemble(input_file: str, output_file: str) -> list: 
+
+        input_code = []
+        with open(input_file, 'r') as f:
+            for i, line in enumerate(f): 
+                input_code.append(line)
+
         code = Assembler.read_code(input_file)
         binary_code =  []
-        error = []
+        error = False
 
-        for i, code in enumerate(code): 
-            instruction_code = Assembler.parse_instruction(code)
+        for i, instruction in enumerate(code): 
+            instruction_code = Assembler.parse_instruction(instruction)
+
             if instruction_code == None:
-                print(f"Error in line in valid_code.txt: {i+1}, line: {code}", file=sys.stderr)
+                print(f"Error in line in {input_file}:{Assembler.find_error_line(instruction, input_code)}, line: {code[0]}", file=sys.stderr)
+                error = True
                 continue
 
-            for j in instruction_code: 
+            if not error:
                 binary_code.append(j)
 
-
-        with open(output_file, 'w') as f:
-            for i in binary_code: 
-                if i == binary_code[-1]: 
-                    f.write(i)
-                else:
-                    f.write(i + "\n")
-            if len(code) < 4096:
-                empty_range = 4096 - len(code)
-                f.write("\n")
-                for i in range(empty_range): 
-                    if (i == empty_range - 1):
-                        f.write("0"*16)
+        if not error:
+            with open(output_file, 'w') as f:
+                for i in binary_code: 
+                    if i == binary_code[-1]: 
+                        f.write(i)
                     else:
-                        f.write("0"*16 + "\n")
+                        f.write(i + "\n")
+                if len(code) < 4096:
+                    empty_range = 4096 - len(code)
+                    f.write("\n")
+                    for i in range(empty_range): 
+                        if (i == empty_range - 1):
+                            f.write("0"*16)
+                        else:
+                            f.write("0"*16 + "\n")
                         
     @staticmethod
     def parse_instruction(line: str) -> str:
-        code = re.split(r'[ ,]+', line)
+        code = line.split(' ', 1)
+        operands = re.split(r'[,]+', code[1])
+        code = [code[0], *operands] 
+
         for i, operand in enumerate(code): 
             code[i] = code[i].lower()
-            if code[i][-1] == ',': 
-                code[i] = code[i][:-1] 
+            code[i] = code[i].replace(" ", "")
+        
         
         code_isa = instructions_table.get(code[0])
         if code_isa == None: 
@@ -56,28 +75,65 @@ class Assembler:
         instr += code_isa[1]
 
         if code_isa[0] == IsaType.NO_OPERANDS: 
+            if len(code) != 1:
+                return None
+
             instr += "0"*11
 
 
         elif code_isa[0] == IsaType.ONE_OPERAND: 
-            instr += registers_table[code[1]]
+            if len(code) != 2:
+                return None
+
+            reg = registers_table.get(code[1])
+            
+            if reg == None: 
+                return None
+            
+            instr += reg
             instr += "0"*8 
 
 
         elif code_isa[0] == IsaType.TWO_OPERAND: 
-            instr += registers_table[code[1]]
-            instr += registers_table[code[2]]
+            if len(code) != 3:
+                return None
+
+            reg1 = registers_table.get(code[1])
+            reg2 = registers_table.get(code[2])
+
+            if reg1 == None or reg2 == None:
+                return None
+            
+            instr += reg1
+            instr += reg2
+
             instr += "0"*5
 
 
         elif code_isa[0] == IsaType.THREE_OPERAND:
-            instr += registers_table[code[1]]
-            instr += registers_table[code[2]]
-            instr += registers_table[code[3]]
+            if len(code) != 4:
+                return None
+
+            reg1 += registers_table.get(code[1]) 
+            reg2 += registers_table.get(code[2])
+            reg3 += registers_table.get(code[3])
+
+            if reg1 == None or reg2 == None or reg3 == None:
+                return None
+            
+            instr += reg1
+            instr += reg2
+            instr += reg3
+
             instr += "0"*2  
 
         elif code_isa[0] == IsaType.IMM_OPERAND:
-            instr += registers_table[code[1]]
+            
+            reg = registers_table.get(code[1])
+
+            if reg == None:
+                return None
+
             instr += "0"*4
 
             imm = code[2]
@@ -92,8 +148,14 @@ class Assembler:
             instr += imm[16:]
 
         elif code_isa[0] == IsaType.SPECIAL_OPERAND:
-            instr += registers_table[code[1]]
-            instr += registers_table[code[2]]
+            reg1 = registers_table.get(code[1])
+            reg2 = registers_table.get(code[2])
+            
+            if reg1 == None or reg2 == None:
+                return None
+            
+            instr += reg1
+            instr += reg2
             instr += "0"
 
             imm = code[3]
@@ -128,12 +190,6 @@ class Assembler:
                     line = line.strip()
                     if line != '':
                         code.append(line.strip())
-        with open("valid_code.txt", 'w') as wf: 
-            for i in code:
-                if i == code[-1]: 
-                    wf.write(i)
-                else: 
-                    wf.write(i + "\n")
         return code
 
 if __name__ == "__main__":
@@ -162,8 +218,8 @@ if __name__ == "__main__":
     
     input_path = args.input 
     output_path = args.output
-
-
     if output_path == None: 
         output_path = "output.txt"
+
+
     Assembler.assemble(input_path, output_path)
