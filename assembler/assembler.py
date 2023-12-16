@@ -34,7 +34,7 @@ class Assembler:
                 continue
 
             if not error:
-                binary_code.append(j)
+                binary_code.extend(instruction_code)
 
         if not error:
             with open(output_file, 'w') as f:
@@ -114,9 +114,9 @@ class Assembler:
             if len(code) != 4:
                 return None
 
-            reg1 += registers_table.get(code[1]) 
-            reg2 += registers_table.get(code[2])
-            reg3 += registers_table.get(code[3])
+            reg1 = registers_table.get(code[1]) 
+            reg2 = registers_table.get(code[2])
+            reg3 = registers_table.get(code[3])
 
             if reg1 == None or reg2 == None or reg3 == None:
                 return None
@@ -134,6 +134,7 @@ class Assembler:
             if reg == None:
                 return None
 
+            instr += reg
             instr += "0"*4
 
             imm = code[2]
@@ -146,8 +147,12 @@ class Assembler:
             imm = "0"*(20 - len(imm[2:])) + imm[2:]
 
             instr += imm[16:]
+            imm = imm[:-4]
 
         elif code_isa[0] == IsaType.SPECIAL_OPERAND:
+            if len(code) != 4:
+                return None
+
             reg1 = registers_table.get(code[1])
             reg2 = registers_table.get(code[2])
             
@@ -168,6 +173,7 @@ class Assembler:
             imm = "0"*(20 - len(imm[2:])) + imm[2:]
 
             instr += imm[16:]
+            print(instr)
             
             imm = imm[:-4]
         
