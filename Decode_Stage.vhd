@@ -18,46 +18,39 @@ ENTITY Decode_Stage IS
         Zero_Flag : OUT STD_LOGIC := '0';
         Neg_Flag : OUT STD_LOGIC := '0';
         Carry_Flag : OUT STD_LOGIC := '0';
-        SPin : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
         SPout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-        CCRin : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-        SPWriteSignal : IN STD_LOGIC; -- '0' Read / '1' Write
-        CCRWriteSignal : IN STD_LOGIC_VECTOR(2 DOWNTO 0) -- '0' Read / '1' Write
+        CCRin : IN STD_LOGIC_VECTOR(2 DOWNTO 0)
     );
 END ENTITY Decode_Stage;
 ARCHITECTURE Decode_Stage_Arch OF Decode_Stage IS
-    COMPONENT RegisterFile
-        PORT (
-            Clk : IN STD_LOGIC;
-            Rsrc1 : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-            Rsrc2 : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-            Rout1 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-            Rout2 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-            Rin1 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-            Rin2 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-            SPin : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-            SPout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
-            CCRin : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-            CCRout : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
-            WB1_Address : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-            WB2_Address : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
-            WB1_Signal : IN STD_LOGIC;
-            WB2_Signal : IN STD_LOGIC;
-            SPWriteSignal : IN STD_LOGIC; -- '0' Read / '1' Write
-            CCRWriteSignal : IN STD_LOGIC_VECTOR(2 DOWNTO 0) -- '0' Read / '1' Write
-        );
-    END COMPONENT;
+    -- COMPONENT RegisterFile
+    --     PORT (
+    --         Clk : IN STD_LOGIC;
+    --         Rsrc1 : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+    --         Rsrc2 : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+    --         Rout1 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+    --         Rout2 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+    --         Rin1 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+    --         Rin2 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+    --         CCRin : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+    --         CCRout : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+    --         WB1_Address : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+    --         WB2_Address : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+    --         WB1_Signal : IN STD_LOGIC;
+    --         WB2_Signal : IN STD_LOGIC
+    --     );
+    -- END COMPONENT;
 
-    COMPONENT mux_2_1
-        GENERIC (
-            N : INTEGER := 8
-        );
-        PORT (
-            a, b : IN STD_LOGIC_VECTOR(N - 1 DOWNTO 0);
-            sel : IN STD_LOGIC;
-            y : OUT STD_LOGIC_VECTOR(N - 1 DOWNTO 0)
-        );
-    END COMPONENT;
+    -- COMPONENT mux_2_1
+    --     GENERIC (
+    --         N : INTEGER := 8
+    --     );
+    --     PORT (
+    --         a, b : IN STD_LOGIC_VECTOR(N - 1 DOWNTO 0);
+    --         sel : IN STD_LOGIC;
+    --         y : OUT STD_LOGIC_VECTOR(N - 1 DOWNTO 0)
+    --     );
+    -- END COMPONENT;
 
     SIGNAL opCode : STD_LOGIC_VECTOR(4 DOWNTO 0);
     SIGNAL Rdst : STD_LOGIC_VECTOR(2 DOWNTO 0);
@@ -106,16 +99,12 @@ BEGIN
         Rout2 => Data_R2,
         Rin1 => WB1_data,
         Rin2 => WB2_data,
-        SPin => SPin,
-        SPout => SPout,
         CCRin => CCRin,
         CCRout => CCR_Temp,
         WB1_Address => WB1_Address,
         WB2_Address => WB2_Address,
         WB1_Signal => WB1_Signal,
-        WB2_Signal => WB2_Signal,
-        SPWriteSignal => SPWriteSignal,
-        CCRWriteSignal => CCRWriteSignal
+        WB2_Signal => WB2_Signal
         );
     Zero_Flag <= CCR_Temp(0);
     Neg_Flag <= CCR_Temp(1);

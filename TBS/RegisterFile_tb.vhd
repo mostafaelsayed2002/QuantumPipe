@@ -13,7 +13,6 @@ ARCHITECTURE TestBenchArch OF RegisterFile_TestBench IS
     SIGNAL SPin, SPout : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL CCRin, CCRout : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
     SIGNAL WB1_Address, WB2_Address : STD_LOGIC_VECTOR(2 DOWNTO 0) := "000";
-    SIGNAL WB1_Signal, WB2_Signal, SPWriteSignal : STD_LOGIC := '0';
     SIGNAL CCRWriteSignal : STD_LOGIC_VECTOR(2 DOWNTO 0) := "000";
 
     COMPONENT RegisterFile
@@ -33,8 +32,6 @@ ARCHITECTURE TestBenchArch OF RegisterFile_TestBench IS
             WB2_Address : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
             WB1_Signal : IN STD_LOGIC;
             WB2_Signal : IN STD_LOGIC;
-            SPWriteSignal : IN STD_LOGIC;
-            CCRWriteSignal : IN STD_LOGIC_VECTOR(2 DOWNTO 0)
         );
     END COMPONENT;
 
@@ -56,8 +53,6 @@ BEGIN
         WB2_Address => WB2_Address,
         WB1_Signal => WB1_Signal,
         WB2_Signal => WB2_Signal,
-        SPWriteSignal => SPWriteSignal,
-        CCRWriteSignal => CCRWriteSignal
     );
 
     -- Clock process

@@ -21,6 +21,7 @@ ENTITY Ex_Stage IS
         Rdst_SWAP_Mem : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
         --data output
         Result : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+        CCRout : OUT STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
         Input_1 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
         Port_Data : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0')
     );
@@ -33,7 +34,6 @@ ARCHITECTURE ARCH_Ex_Stage OF Ex_Stage IS
     SIGNAL imm_ase : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL ea_ase : STD_LOGIC_VECTOR(31 DOWNTO 0);
     SIGNAL op2_mux : STD_LOGIC_VECTOR(31 DOWNTO 0);
-    SIGNAL c_new : STD_LOGIC_VECTOR(2 DOWNTO 0);
 
     SIGNAL cat_signal : STD_LOGIC_VECTOR(19 DOWNTO 0);
 BEGIN
@@ -89,7 +89,7 @@ BEGIN
         in1 => alu_in_1,
         in2 => alu_in_2,
         outp => Result,
-        c_new => c_new
+        c_new => CCRout
         );
 
     Input_1 <= alu_in_1;
