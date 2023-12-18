@@ -9,8 +9,6 @@ ARCHITECTURE behavior OF Mem_Stage_tb IS
     -- Component declarations
     COMPONENT Mem_Stage
         PORT (
-            call_sp : IN STD_LOGIC;
-            sp_sel : IN STD_LOGIC;
             free : IN STD_LOGIC;
             protect : IN STD_LOGIC;
             mem_write : IN STD_LOGIC;

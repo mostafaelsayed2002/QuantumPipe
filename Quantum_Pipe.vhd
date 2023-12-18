@@ -69,7 +69,6 @@ ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
     SIGNAL SPin : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL SPout : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL CCRin : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL SPWriteSignal : STD_LOGIC := '0';
     SIGNAL SPNextVal : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
 
     SIGNAL MemDataOut : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
@@ -125,7 +124,6 @@ BEGIN
         ALU_Op_Code => D_ALU_Op_Code,
         Implicit_Sources => D_Implicit_Sources,
         Forwarding_Swap => D_Forwarding_Swap,
-        Call_Stack_Pointer => D_Call_Stack_Pointer,
         Free_Operation => D_Free_Operation,
         Protection_Signal => D_Protection_Signal,
         Memory_Read => D_Memory_Read,
@@ -135,8 +133,10 @@ BEGIN
         Write_Back_Source => D_Write_Back_Source,
         Port_Read => D_Port_Read,
         Port_Write => D_Port_Write,
-        Stack_Pointer_Select => D_Stack_Pointer_Select,
-        Stack_Pointer_Update => D_Stack_Pointer_Update
+        
+        Call_Stack_Pointer => D_Call_Stack_Pointer, -- call sp 
+        Stack_Pointer_Select => D_Stack_Pointer_Select, -- sp select
+        Stack_Pointer_Update => D_Stack_Pointer_Update -- sp operation 
         );
     D : ENTITY work.Decode_Stage PORT MAP(
         Clk => clk,
@@ -153,10 +153,8 @@ BEGIN
         Zero_Flag => zero_flag,
         Neg_Flag => Neg_Flag,
         Carry_Flag => Carry_Flag,
-        SPin => Regout_MW(136 DOWNTO 105), --- mostafa
         SPout => SPout,
-        CCRin => CCRin,
-        SPWriteSignal => SPWriteSignal
+        CCRin => CCRin
         );
 
     RegIN_DE <= D_IMM_Jump & --150
@@ -259,16 +257,12 @@ BEGIN
         protect => REGOUT_EM(145),
         mem_write => REGOUT_EM(143),
         mem_read => REGOUT_EM(144),
-        SPoperation => REGOUT_EM(147),
-        SPOrSPNext => anding,
-        sp => SPout,
+        SPoperation => REGOUT_EM(137),
         clk => clk,
         pc => REGOUT_EM(104 DOWNTO 73),
         alu_out => REGOUT_EM(72 DOWNTO 41),
         op_1 => REGOUT_EM(40 DOWNTO 9),
-        ForwardingSP => REGOUT_MW(136 DOWNTO 105), --The next stage Sp value
         mem_data => MemDataOut,
-        SPOut => SPNextVal,
         mem_address => Addddddddddr
         );
 
