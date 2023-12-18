@@ -123,8 +123,11 @@ class Assembler:
     @staticmethod
     def parse_instruction(line: str) -> str:
         code = line.split(' ', 1)
-        operands = re.split(r'[,]+', code[1])
-        code = [code[0], *operands] 
+        operands = None 
+        if (len(code) > 1):
+            operands = re.split(r'[,]+', code[1])
+        if operands != None:
+            code = [code[0], *operands] 
 
         for i, operand in enumerate(code): 
             code[i] = code[i].lower()
