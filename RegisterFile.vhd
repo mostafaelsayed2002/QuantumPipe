@@ -18,8 +18,7 @@ ENTITY RegisterFile IS
         WB2_Address : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
         WB1_Signal : IN STD_LOGIC;
         WB2_Signal : IN STD_LOGIC;
-        SPWriteSignal : IN STD_LOGIC; -- '0' Read / '1' Write
-        CCRWriteSignal : IN STD_LOGIC_VECTOR(2 DOWNTO 0) -- '0' Read / '1' Write
+        SPWriteSignal : IN STD_LOGIC -- '0' Read / '1' Write
     );
 END ENTITY RegisterFile;
 
@@ -36,7 +35,6 @@ ARCHITECTURE RegisterFileArch OF RegisterFile IS
     SIGNAL CCR : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
 BEGIN
     PROCESS (Clk)
-
     BEGIN
         IF rising_edge(Clk) THEN
             IF (WB1_Signal = '1') THEN
@@ -87,22 +85,13 @@ BEGIN
                 SP <= SPin;
             END IF;
 
-            IF (CCRWriteSignal(0) = '1') THEN
-                CCR(0) <= CCRin(0);
-            END IF;
-
-            IF (CCRWriteSignal(1) = '1') THEN
-                CCR(1) <= CCRin(1);
-            END IF;
-
-            IF (CCRWriteSignal(2) = '1') THEN
-                CCR(2) <= CCRin(2);
-            END IF;
         END IF;
     END PROCESS;
 
-    PROCESS (Clk)
+    CCR <= CCRin;
+    CCRout <= CCR;
 
+    PROCESS (Clk)
     BEGIN
         IF falling_edge(Clk) THEN
             CASE Rsrc1 IS
@@ -148,7 +137,4 @@ BEGIN
     END PROCESS;
     SPout <= SP;
 
-    CCRout(0) <= CCR(0);
-    CCRout(1) <= CCR(1);
-    CCRout(2) <= CCR(2);
 END RegisterFileArch;

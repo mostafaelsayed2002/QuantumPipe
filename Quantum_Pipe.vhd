@@ -70,7 +70,6 @@ ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
     SIGNAL SPout : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL CCRin : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
     SIGNAL SPWriteSignal : STD_LOGIC := '0';
-    SIGNAL CCRWriteSignal : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
     SIGNAL SPNextVal : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
 
     SIGNAL MemDataOut : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
@@ -157,9 +156,7 @@ BEGIN
         SPin => Regout_MW(136 DOWNTO 105), --- mostafa
         SPout => SPout,
         CCRin => CCRin,
-        SPWriteSignal => SPWriteSignal,
-        CCRWriteSignal => CCRWriteSignal
-
+        SPWriteSignal => SPWriteSignal
         );
 
     RegIN_DE <= D_IMM_Jump & --150
@@ -222,7 +219,8 @@ BEGIN
         ---- outputs
         Result => Excute_Result,
         Input_1 => Excute_Input,
-        Port_Data => out_port
+        Port_Data => out_port,
+        CCRout => CCRin
         );
 
     REGIN_EM <=
