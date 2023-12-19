@@ -3,14 +3,25 @@
 # rti
 
 
-# NoT r1
+Not r1
+dec r1
+dec r1
+nop
+not r2 
+dec r2
+swap r1,r2
+sub r3, r1, r2
+
+
+
+
+
 # NEg r2
 # inc r3
 # dec r4
 # out r5
 # in r6
-# push r7
-# pop r0
+
 
 # swap r1, r2
 # cmp r3, r4
@@ -22,7 +33,7 @@
 # or r2, r3, r4
 # xor r5, r6, r7
 
-adii r1, r2, 10
+#adii r1, r2, 10
 
 # bitset r1, 4
 # rcl r2, 0x00454 # hello world
