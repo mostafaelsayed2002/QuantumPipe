@@ -5,19 +5,19 @@ USE ieee.numeric_std.ALL;
 
 ENTITY Forwarding_Unit IS
     PORT (
-        Rsrc1 : IN STD_LOGIC_VECTOR(2 DOWNTO 0); -- the first source
-        Rsrc2_Rdst : IN STD_LOGIC_VECTOR(2 DOWNTO 0); -- the second source
+        Rsrc1 : IN STD_LOGIC_VECTOR(2 DOWNTO 0); -- the first source 000
+        Rsrc2_Rdst : IN STD_LOGIC_VECTOR(2 DOWNTO 0); -- the second source 001
          
-        Rdst_Ex : IN STD_LOGIC_VECTOR(2 DOWNTO 0); -- the first dist ex
+        Rdst_Ex : IN STD_LOGIC_VECTOR(2 DOWNTO 0); -- the first dist ex 001
        
-        Rdst_Mem : IN STD_LOGIC_VECTOR(2 DOWNTO 0); -- the first dist mem
+        Rdst_Mem : IN STD_LOGIC_VECTOR(2 DOWNTO 0); -- the first dist mem 000
         
-        Rsrc1_Ex : IN STD_LOGIC_VECTOR(2 DOWNTO 0); -- the second dist ex 
+        Rsrc1_Ex : IN STD_LOGIC_VECTOR(2 DOWNTO 0); -- the second dist ex 000
        
-        Rsrc1_Mem : IN STD_LOGIC_VECTOR(2 DOWNTO 0); -- the second dist mem 
+        Rsrc1_Mem : IN STD_LOGIC_VECTOR(2 DOWNTO 0); -- the second dist mem 000
                
-        WB_Ex : IN STD_LOGIC;
-        WB_Mem : IN STD_LOGIC;
+        WB_Ex : IN STD_LOGIC; --1
+        WB_Mem : IN STD_LOGIC;--0
 
 
         SWAP_FW_Ex : IN STD_LOGIC;
@@ -102,7 +102,7 @@ BEGIN
                 IF WB_Ex = '1' and R1_equal_Rdst1_Ex = '1'  THEN 
                     SEL_OP1 <= "100"; -- select Rdst1 EX
                 ELSE 
-                    IF WB_Ex = '1' and R1_equal_Rdst1_Mem = '1' THEN
+                    IF WB_Mem = '1' and R1_equal_Rdst1_Mem = '1' THEN
                          SEL_OP1 <= "001"; -- select Rdst1 mem 
                     ELSE 
                         SEL_OP1 <= "000"; -- select Default
@@ -130,7 +130,7 @@ BEGIN
                 IF WB_Ex = '1' and R2_equal_Rdst1_Ex = '1'  THEN 
                     SEL_OP2 <= "100"; -- select Rdst1 EX
                 ELSE 
-                    IF WB_Ex = '1' and R2_equal_Rdst1_Mem = '1' THEN
+                    IF WB_Mem = '1' and R2_equal_Rdst1_Mem = '1' THEN
                         SEL_OP2 <= "001"; -- select Rdst1 mem 
                 ELSE 
                         SEL_OP2 <= "000"; -- select Default
