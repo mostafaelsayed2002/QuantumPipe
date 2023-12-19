@@ -80,6 +80,10 @@ ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
     SIGNAL anding : STD_LOGIC := '0';
 
     SIGNAL Addddddddddr : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+
+    SIGNAL Forward_Mux_Output : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
+
+
 BEGIN
     PROCESS
     BEGIN
@@ -153,7 +157,6 @@ BEGIN
         Zero_Flag => zero_flag,
         Neg_Flag => Neg_Flag,
         Carry_Flag => Carry_Flag,
-        SPout => SPout,
         CCRin => CCRin
         );
 
@@ -181,8 +184,9 @@ BEGIN
         Regout_FD(10 DOWNTO 2) & --109 - 101 
         pcval & -- 100-69
         Regout_FD(3 DOWNTO 0) & -- 68-65
-        Data_R1 & --64 - 33  
-        Data_R2 & --32 - 1
+        Data_R2 & --64 - 33  
+        Data_R1 & --32 - 1
+        -- exchange Data_R1  and Data_R2
         zero_flag;
 
  
@@ -194,7 +198,6 @@ BEGIN
         Output => Regout_DE,
         Rst => reset
         );
-
     --*-----------------------------------
 
     E : ENTITY work.Ex_Stage PORT MAP(
@@ -220,6 +223,39 @@ BEGIN
         Port_Data => out_port,
         CCRout => CCRin
         );
+
+
+        mux_forward : ENTITY work.Mux_2_1 GENERIC MAP(3) PORT MAP(
+        a => REGOUT_DE(109 downto 107), -- Rdst 001
+        b => REGOUT_DE(103 downto 101), --Rsrc2 000
+        sel =>REGOUT_DE(146),
+        y => Forward_Mux_Output -- Forwarding_Source
+        );
+
+
+        -- Fowrading unit 
+        Forward_unit : ENTITY work.Forwarding_Unit PORT MAP(
+            Rsrc1 => REGOUT_DE(106 downto 104), -- the first source Rsrc1 000
+            Rsrc2_Rdst => Forward_Mux_Output, -- the second source Rsrc2 or Rdst  001
+        
+            Rdst_Ex => REGOUT_EM(8 DOWNTO 6), -- the first dist ex 001
+           
+            Rdst_Mem => REGOUT_MW(40 DOWNTO 38), -- the first dist mem 000
+
+            Rsrc1_Ex =>  REGOUT_EM(5 DOWNTO 3),   -- the second dist ex 000
+           
+            Rsrc1_Mem => REGOUT_MW (37 DOWNTO 35),  -- the second dist mem 000
+                   
+            WB_Ex => REGOUT_EM(142), --1
+            WB_Mem =>REGOUT_MW(173),--0
+            SWAP_FW_Ex => REGOUT_EM(148),--0
+            SWAP_FW_Mem =>REGOUT_MW(174),--0
+    
+            SEL_OP1 =>FW_SEL_2,
+            SEL_OP2 =>FW_SEL_1
+        );
+
+
 
     REGIN_EM <=
         Regout_DE(129) & --------- read signal port  ----150
@@ -261,7 +297,7 @@ BEGIN
         clk => clk,
         pc => REGOUT_EM(104 DOWNTO 73),
         alu_out => REGOUT_EM(72 DOWNTO 41),
-        op_1 => REGOUT_EM(40 DOWNTO 9),
+        op_1 => REGOUT_EM(136 DOWNTO 105), 
         mem_data => MemDataOut,
         mem_address => Addddddddddr
         );
