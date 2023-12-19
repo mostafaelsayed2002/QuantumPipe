@@ -226,6 +226,7 @@ BEGIN
                 Port_Write <= '0';
                 Stack_Pointer_Select <= '1';
                 Stack_Pointer_Update <= '1';
+                Write_Back_Source <= "00";
 
             WHEN "01011" => -- Protect
                 IMM_Jump <= '0';

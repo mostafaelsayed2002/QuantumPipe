@@ -18,7 +18,6 @@ ENTITY Decode_Stage IS
         Zero_Flag : OUT STD_LOGIC := '0';
         Neg_Flag : OUT STD_LOGIC := '0';
         Carry_Flag : OUT STD_LOGIC := '0';
-        SPout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
         CCRin : IN STD_LOGIC_VECTOR(2 DOWNTO 0)
     );
 END ENTITY Decode_Stage;
