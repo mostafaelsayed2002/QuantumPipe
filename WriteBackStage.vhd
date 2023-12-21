@@ -7,7 +7,6 @@ ENTITY WriteBackStage IS
         wbsrc : IN STD_LOGIC_VECTOR(1 DOWNTO 0); --
         memdata : IN STD_LOGIC_VECTOR(31 DOWNTO 0); --
         aludata : IN STD_LOGIC_VECTOR(31 DOWNTO 0); --
-        portdata : IN STD_LOGIC_VECTOR(31 DOWNTO 0); --
         wbdata : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0')--
     );
 END WriteBackStage;
@@ -17,7 +16,6 @@ BEGIN
     WITH (wbsrc) SELECT
     wbdata <= memdata WHEN "00",
         aludata WHEN "01",
-        portdata WHEN "10",
         (OTHERS => '0') WHEN OTHERS;
 
 END WriteBackStageArch; -- WriteBackStage

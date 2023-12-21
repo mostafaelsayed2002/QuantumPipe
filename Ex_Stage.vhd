@@ -23,10 +23,13 @@ ENTITY Ex_Stage IS
         Result : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
         CCRout : OUT STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
         Input_1 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-        Port_Data : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+        
 
         --flages input
-        c_old :IN STD_LOGIC_VECTOR(2 DOWNTO 0)
+        c_old :IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+        -- portr
+        PORTR : IN STD_LOGIC;
+        PORT_DATA: IN STD_LOGIC_VECTOR(31 DOWNTO 0)
     );
 END ENTITY;
 
@@ -39,6 +42,8 @@ ARCHITECTURE ARCH_Ex_Stage OF Ex_Stage IS
     SIGNAL op2_mux : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
     SIGNAL cat_signal : STD_LOGIC_VECTOR(19 DOWNTO 0);
+
+    signal MUX_OP1: STD_LOGIC_VECTOR(31 DOWNTO 0);
 BEGIN
 
     se0 : ENTITY work.SignExtend GENERIC MAP(16) PORT MAP(
@@ -76,6 +81,14 @@ BEGIN
         y => alu_in_1
         );
 
+        INPU1_OR_PORT : ENTITY work.Mux_2_1 GENERIC MAP(32) PORT MAP(
+            a => alu_in_1,
+            b => PORT_DATA,
+            sel => PORTR,
+            y => MUX_OP1
+            );
+    
+
     m3 : ENTITY work.Mux_5_3 GENERIC MAP(32) PORT MAP(
         a => op2_mux,
         b => Rdst_WB_data,
@@ -88,14 +101,14 @@ BEGIN
 
     alu : ENTITY work.ALU PORT MAP(
         op => ALU_OP,
-        c_old => c_old,
-        in1 => alu_in_1,
+        in1 => MUX_OP1,
         in2 => alu_in_2,
         outp => Result,
+        c_old => c_old,
         c_new => CCRout
         );
 
-    Input_1 <= alu_in_1;
-    Port_Data <= alu_in_1;
+    Input_1 <= MUX_OP1;
+    
 
 END ARCH_Ex_Stage;

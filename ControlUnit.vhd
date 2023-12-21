@@ -187,7 +187,7 @@ BEGIN
                 Memory_Write <= '0';
                 Write_Back <= '1';
                 Write_Back_2 <= '0';
-                Write_Back_Source <= "10";
+                Write_Back_Source <= "01";
                 Port_Read <= '1';
                 Port_Write <= '0';
                 Stack_Pointer_Select <= '0';

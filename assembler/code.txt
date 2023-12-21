@@ -3,13 +3,11 @@
 # rti
 
 
-not r1
-nop 
-jz r0
-push r4
-push r4
-push r6
-push r6
+
+
+not r0
+out r0
+in r0
 
 
 

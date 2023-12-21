@@ -5,7 +5,9 @@ USE ieee.numeric_std.ALL;
 ENTITY Quantum_Pipe IS
     PORT (     
         intr : IN STD_LOGIC;
-        reset : IN STD_LOGIC   
+        reset : IN STD_LOGIC;
+        in_port : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+        out_port : OUT STD_LOGIC_VECTOR(31 DOWNTO 0):= (OTHERS => '0')
     );
 END Quantum_Pipe;
 
@@ -17,10 +19,8 @@ ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
     SIGNAL instr : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
     SIGNAL Regout_FD : STD_LOGIC_VECTOR(47 DOWNTO 0) := (OTHERS => '0');
     SIGNAL RegIN_FD : STD_LOGIC_VECTOR(47 DOWNTO 0) := (OTHERS => '0');
-    --//////////////////Port///////////////////////
-    SIGNAL out_port : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL in_port :  STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0'); 
-    --////////////////////
+
+
 
     SIGNAL Data_R1 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL Data_R2 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
@@ -217,7 +217,7 @@ BEGIN
         D_Write_Back & --133
         D_Write_Back_2 & --132
         D_Write_Back_Source & -- 131-130 
-        D_Port_Read & --129 --------
+        D_Port_Read & --129 -------- 
         D_Port_Write & --128 --------
         D_Stack_Pointer_Select & --127
         D_Stack_Pointer_Update & --126
@@ -240,6 +240,7 @@ BEGIN
         Rst => reset,
         Fix => '0'
         );
+        
     --*-----------------------------------
    
     
@@ -264,10 +265,13 @@ BEGIN
         ---- outputs
         Result => Excute_Result,
         Input_1 => Excute_Input,
-        Port_Data => out_port,
+
         CCRout => CCRin,
         --- flages input 
-        c_old => Flages
+        c_old => Flages,
+
+        PORTR =>Regout_DE(129),
+        PORT_DATA=> in_port
         );
 
 
@@ -388,16 +392,8 @@ BEGIN
             wbsrc => Regout_MW(171 DOWNTO 170), --
             memdata => Regout_MW(104 DOWNTO 73), --
             aludata => Regout_MW(72 DOWNTO 41), --
-            portdata => in_port, --
-            wbdata => Rdst_WB_data--
+            wbdata => Rdst_WB_data --
         );
+        out_port <= Rdst_WB_data when Regout_MW(171 DOWNTO 170) ="10"; 
 
-    io : ENTITY work.io
-        PORT MAP(
-            clk  => clk,
-            portread => Regout_MW(176),
-            portwrite => Regout_DE(128),  
-            indata => out_port,
-            outdata =>in_port
-        );
 END ARCHITECTURE Arch_Quantum_Pipe;
