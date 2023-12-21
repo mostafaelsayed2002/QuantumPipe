@@ -8,6 +8,7 @@ ENTITY FetchingStage IS
         fixpc : IN STD_LOGIC; -- hazard detection
         jmpflag : IN STD_LOGIC; -- control unit
         jmplocation : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+        reset : IN STD_LOGIC;
 
         pcval : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
         instr : OUT STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0')
@@ -36,12 +37,13 @@ BEGIN
             insout => insout
         );
 
-    PROCESS (clk)
+    PROCESS (clk,reset)
         VARIABLE pcaddoperand : INTEGER := 0;
         VARIABLE nextpc : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     BEGIN
-        IF rising_edge(clk) THEN
-
+        IF reset = '1' THEN
+            pc <= (others =>'0');
+        elsIF rising_edge(clk) THEN
             IF fixpc = '1' THEN
                 nextpc := pc;
             ELSE
@@ -56,8 +58,7 @@ BEGIN
             END IF;
 
             pcval <= nextpc;
-
         END IF;
     END PROCESS;
-    instr <= insout;
+    instr <= insout when reset = '0' else X"0000";
 END ARCHITECTURE; -- FetchingStageArch

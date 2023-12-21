@@ -14,7 +14,8 @@ ENTITY DataMemory IS
         addr : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
 
         datain : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-        dataout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0')
+        dataout : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+        reset : IN STD_LOGIC 
     );
 END DataMemory;
 
@@ -25,13 +26,16 @@ ARCHITECTURE DataMemoryArch OF DataMemory IS
     SIGNAL ram : ram_type := (OTHERS => (OTHERS => '0'));
 
 BEGIN
-    PROCESS (clk) IS
+    PROCESS (clk, reset) IS
         VARIABLE helper33 : STD_LOGIC_VECTOR(33 DOWNTO 0) := (OTHERS => '0');
         VARIABLE helper32 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
         VARIABLE helper12 : STD_LOGIC_VECTOR(11 DOWNTO 0) := (OTHERS => '0');
 
     BEGIN
-        IF falling_edge(clk) THEN
+
+        IF reset = '1' THEN
+            ram <= (OTHERS => (OTHERS => '0'));
+        ELSIF falling_edge(clk) THEN
             helper33(16 DOWNTO 0) := ram(to_integer(UNSIGNED(addr(11 DOWNTO 0))));
             helper12 := STD_LOGIC_VECTOR(UNSIGNED(addr(11 DOWNTO 0)) + 1);
             helper33(33 DOWNTO 17) := ram(to_integer(UNSIGNED(helper12)));

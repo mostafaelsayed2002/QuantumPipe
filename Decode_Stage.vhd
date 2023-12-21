@@ -17,7 +17,8 @@ ENTITY Decode_Stage IS
         jmp_Flag : OUT STD_LOGIC := '0';
         CCRin : IN STD_LOGIC_VECTOR(2 DOWNTO 0) ;
         CCRout : OUT STD_LOGIC_VECTOR(2 DOWNTO 0):= (OTHERS => '0');
-        JZ : OUT STD_LOGIC
+        JZ : OUT STD_LOGIC;
+        reset  : IN STD_LOGIC
     );
 END ENTITY Decode_Stage;
 ARCHITECTURE Decode_Stage_Arch OF Decode_Stage IS
@@ -74,7 +75,8 @@ BEGIN
         WB1_Address => WB1_Address,
         WB2_Address => WB2_Address,
         WB1_Signal => WB1_Signal,
-        WB2_Signal => WB2_Signal
+        WB2_Signal => WB2_Signal,
+        reset =>reset
         );
     CCRout <= CCR_Temp;
 

@@ -52,15 +52,15 @@ BEGIN
         s_output => imm_ase
         );
 
-    cat_signal <= bit_ea_4 & bit_ea_imm_16;
+    cat_signal <=   bit_ea_imm_16 & bit_ea_4;
     se1 : ENTITY work.SignExtend GENERIC MAP(20) PORT MAP(
         length => '0',
         s_input => cat_signal,
         s_output => ea_ase
         );
     m0 : ENTITY work.Mux_2_1 GENERIC MAP(32) PORT MAP(
-        a => imm_ase,
-        b => ea_ase,
+        a => ea_ase,
+        b => imm_ase,
         sel => IMM_EA,
         y => op2_imm_ea
         );

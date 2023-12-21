@@ -17,6 +17,7 @@ ENTITY Mem_Stage IS
         pc : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
         alu_out : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
         op_1 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+        reset : IN STD_LOGIC;
         --output
         mem_data : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
         mem_address : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0')
@@ -67,7 +68,8 @@ BEGIN
         free => free,
         addr => Address,
         datain => data,
-        dataout => mem_data
+        dataout => mem_data,
+        reset=> reset
         );
 
     add : ENTITY work.Adder_Subtractor PORT MAP(
@@ -77,11 +79,13 @@ BEGIN
         Enable => '1',
         Result => Pc_plus_1
         );
-    PROCESS (clk)
+    PROCESS (clk,reset)
         VARIABLE sphelper : STD_LOGIC_VECTOR(31 DOWNTO 0);
 
     BEGIN
-        IF rising_edge(clk) THEN
+        IF reset = '1' THEN 
+            Sp <= X"0000_0FFF";
+        ELSIF rising_edge(clk) THEN
             IF sp_sel = '1' THEN
                 sphelper := sp;
                 IF SPoperation = '0' THEN

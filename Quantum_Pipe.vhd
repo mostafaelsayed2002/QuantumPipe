@@ -5,7 +5,6 @@ USE ieee.numeric_std.ALL;
 ENTITY Quantum_Pipe IS
     PORT (     
         intr : IN STD_LOGIC;
-        reset : IN STD_LOGIC;
         in_port : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
         out_port : OUT STD_LOGIC_VECTOR(31 DOWNTO 0):= (OTHERS => '0')
     );
@@ -13,6 +12,8 @@ END Quantum_Pipe;
 
 ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
     SIGNAL clk : STD_LOGIC := '0';
+    signal reset : STD_LOGIC := '0';
+
     SIGNAL fixpc : STD_LOGIC := '0';
     SIGNAL jmpflag : STD_LOGIC := '0';
     SIGNAL pcval : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
@@ -118,7 +119,8 @@ BEGIN
         jmpflag => JMP_IMM_OR_JZ_Signal,
         jmplocation => JmpLocation,
         pcval => pcval,
-        instr => instr
+        instr => instr,
+        reset =>reset
         );
 
     RegIN_FD <= pcval & -- 47 => 16 
@@ -128,7 +130,7 @@ BEGIN
         Clk => clk,
         Input => RegIN_FD,
         Output => Regout_FD,
-        Rst => reset,
+        reset => reset,
         Fix =>fixpc
         );
 
@@ -197,7 +199,8 @@ BEGIN
         jmp_Flag => jmpflag,
         CCRin => CCRin,
         JZ => JZ,
-        CCRout => Flages
+        CCRout => Flages,
+	reset => reset
         );
 
     RegIN_DE <= JZ & -- added new for jz -- 151
@@ -237,7 +240,7 @@ BEGIN
         Clk => clk,
         Input => RegIN_DE,
         Output => Regout_DE,
-        Rst => reset,
+        reset => reset,
         Fix => '0'
         );
         
@@ -338,7 +341,7 @@ BEGIN
         Clk => clk,
         Input => REGIN_EM,
         Output => REGOUT_EM,
-        Rst => reset,
+        reset => reset,
         Fix =>'0'
         );
         
@@ -358,7 +361,8 @@ BEGIN
         alu_out => REGOUT_EM(72 DOWNTO 41),
         op_1 => REGOUT_EM(136 DOWNTO 105), 
         mem_data => MemDataOut,
-        mem_address => Addddddddddr
+        mem_address => Addddddddddr,
+        reset => reset
         );
 
     REGIN_MW <=
@@ -382,7 +386,7 @@ BEGIN
         Clk => clk,
         Input => REGIN_MW,
         Output => Regout_MW,
-        Rst => reset,
+        reset => reset,
         Fix =>'0'
         );
         
