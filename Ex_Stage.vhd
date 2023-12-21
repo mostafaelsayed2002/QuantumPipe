@@ -23,7 +23,10 @@ ENTITY Ex_Stage IS
         Result : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
         CCRout : OUT STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
         Input_1 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
-        Port_Data : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0')
+        Port_Data : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
+
+        --flages input
+        c_old :IN STD_LOGIC_VECTOR(2 DOWNTO 0)
     );
 END ENTITY;
 
@@ -85,7 +88,7 @@ BEGIN
 
     alu : ENTITY work.ALU PORT MAP(
         op => ALU_OP,
-        c_old => "000",
+        c_old => c_old,
         in1 => alu_in_1,
         in2 => alu_in_2,
         outp => Result,

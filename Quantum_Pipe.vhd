@@ -26,7 +26,7 @@ ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
     SIGNAL Data_R2 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     --/////////////////////////////////////////
     SIGNAL zero_flag : STD_LOGIC := '0';
-    SIGNAL Regout_DE : STD_LOGIC_VECTOR(150 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL Regout_DE : STD_LOGIC_VECTOR(151 DOWNTO 0) := (OTHERS => '0');
     -- waithing for making forwarding unit
     SIGNAL Fw_Sel_1 : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
     SIGNAL Fw_Sel_2 : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
@@ -59,10 +59,10 @@ ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
     SIGNAL D_Stack_Pointer_Select : STD_LOGIC := '0';
     SIGNAL D_Stack_Pointer_Update : STD_LOGIC := '0';
     SIGNAL OPCODE_OR_NOP : STD_LOGIC_VECTOR(4 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL RegIN_DE : STD_LOGIC_VECTOR(150 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL RegIN_DE : STD_LOGIC_VECTOR(151 DOWNTO 0) := (OTHERS => '0');
 
-    SIGNAL REGIN_EM : STD_LOGIC_VECTOR(150 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL REGOUT_EM : STD_LOGIC_VECTOR(150 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL REGIN_EM : STD_LOGIC_VECTOR(151 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL REGOUT_EM : STD_LOGIC_VECTOR(151 DOWNTO 0) := (OTHERS => '0');
 
     SIGNAL Neg_Flag : STD_LOGIC := '0';
     SIGNAL Carry_Flag : STD_LOGIC := '0';
@@ -81,8 +81,16 @@ ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
 
     SIGNAL Addddddddddr : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
 
-    SIGNAL Forward_Mux_Output : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
 
+    -----------------------------------------
+    SIGNAL Forward_Mux_Output : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL InsertNop : STD_LOGIC := '0';
+    SIGNAL JZ : STD_LOGIC := '0';
+    SIGNAL Flages : STD_LOGIC_VECTOR(2 DOWNTO 0);
+    SIGNAL JZ_Signal: STD_LOGIC := '0';
+    SIGNAL JMP_IMM_OR_JZ_Signal: STD_LOGIC := '0';
+ 
+    SIGNAL JmpLocation :STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
 
 BEGIN
     PROCESS
@@ -90,11 +98,25 @@ BEGIN
         WAIT FOR 15 ns;
         clk <= NOT clk;
     END PROCESS;
+
+
+    JmpLocation_MUX : ENTITY work.MUX_2_1 GENERIC MAP(
+        32) PORT MAP(
+        a =>Data_R1 , -- JmpLocation - Input
+        b =>Regout_DE(32 DOWNTO 1) , -- JmpLocation - Input-JZ (op1 from ex)
+        sel => JZ_Signal,
+        y => JmpLocation
+        );
+
+
+
+
+    JMP_IMM_OR_JZ_Signal <= jmpflag OR JZ_Signal;
     F : ENTITY work.FetchingStage PORT MAP(
         clk => clk,
         fixpc => fixpc,
-        jmpflag => jmpflag,
-        jmplocation => Data_R1,
+        jmpflag => JMP_IMM_OR_JZ_Signal,
+        jmplocation => JmpLocation,
         pcval => pcval,
         instr => instr
         );
@@ -106,10 +128,29 @@ BEGIN
         Clk => clk,
         Input => RegIN_FD,
         Output => Regout_FD,
-        Rst => reset
+        Rst => reset,
+        Fix =>fixpc
         );
+
+
+    -- Hazard Detection unit
+    Hazard_Detection_unit: ENTITY work.Hazard_Detection PORT MAP(
+        Rsrc1 =>Regout_FD(7 DOWNTO 5) ,
+        Rsrc2 =>Regout_FD(4 DOWNTO 2) ,
+        Rdst =>Regout_DE(109 DOWNTO 107) ,
+        MemRead =>Regout_DE(135),
+        InsertNop => InsertNop,
+        FixPC =>fixpc
+    );
+
+
+
+
     --control unit  
-    ORing <= Regout_DE(150) OR (Regout_DE(150) AND Regout_DE(0)) OR REGOUT_EM(149) OR Regout_MW(175);
+    -- ORing <= Regout_DE(150) OR (Regout_DE(150) AND Regout_DE(0)) OR REGOUT_EM(149) OR Regout_MW(175) OR InsertNop;
+                --JMP/IMM       --NOP            --NOP           -- HD unit     -- JZ_Signal from ex stage --JZ_Signal from mem
+    ORing <= Regout_DE(150) OR REGOUT_EM(149) OR Regout_MW(175) OR InsertNop OR JZ_Signal OR REGOUT_EM(151);
+    
     M0 : ENTITY work.MUX_2_1 GENERIC MAP(
         5) PORT MAP(
         a => Regout_FD(15 DOWNTO 11),
@@ -154,13 +195,13 @@ BEGIN
         Data_R1 => Data_R1,
         Data_R2 => Data_R2,
         jmp_Flag => jmpflag,
-        Zero_Flag => zero_flag,
-        Neg_Flag => Neg_Flag,
-        Carry_Flag => Carry_Flag,
-        CCRin => CCRin
+        CCRin => CCRin,
+        JZ => JZ,
+        CCRout => Flages
         );
 
-    RegIN_DE <= D_IMM_Jump & --150
+    RegIN_DE <= JZ & -- added new for jz -- 151
+        D_IMM_Jump & --150
         D_No_Operation & -- 149
         D_IMM_Effective_Address & -- 148 -----mostafa
         D_ALU_Source_Select & -- 147
@@ -187,18 +228,21 @@ BEGIN
         Data_R2 & --64 - 33  
         Data_R1 & --32 - 1
         -- exchange Data_R1  and Data_R2
-        zero_flag;
+        zero_flag; -- no longer needed but leave him alone
 
  
-
+       
     REG_DE : ENTITY work.Reg GENERIC MAP(
-        151) PORT MAP(
+        152) PORT MAP(
         Clk => clk,
         Input => RegIN_DE,
         Output => Regout_DE,
-        Rst => reset
+        Rst => reset,
+        Fix => '0'
         );
     --*-----------------------------------
+   
+    
 
     E : ENTITY work.Ex_Stage PORT MAP(
         IMM_EA => Regout_DE(148),
@@ -221,9 +265,16 @@ BEGIN
         Result => Excute_Result,
         Input_1 => Excute_Input,
         Port_Data => out_port,
-        CCRout => CCRin
+        CCRout => CCRin,
+        --- flages input 
+        c_old => Flages
         );
 
+
+        -- Regout_DE(151) --JZ 
+        -- JZ_signal = 1 when the ZF =1 and the instr in ex stage is JZ
+        -- JZ_Signal <= Flages(0) and Regout_DE(151);
+        JZ_Signal <= Flages(0) and  Regout_DE(151);
 
         mux_forward : ENTITY work.Mux_2_1 GENERIC MAP(3) PORT MAP(
         a => REGOUT_DE(109 downto 107), -- Rdst 001
@@ -258,7 +309,8 @@ BEGIN
 
 
     REGIN_EM <=
-        Regout_DE(129) & --------- read signal port  ----150
+        JZ_Signal & -- added new due to JZ --- 151
+        Regout_DE(129) & --------- read signal port  ---- 150
         Regout_DE(149) & --NOP => 149
         Regout_DE(139) & -- SwapForward => 148
         Regout_DE(138) & -- call_stack_ptr => 147
@@ -275,15 +327,17 @@ BEGIN
         Regout_DE(100 DOWNTO 69) & -- PCVal => 73 - 104
         Excute_Result & -- 41 - 72
         Regout_DE(64 DOWNTO 33) & --Operand1 => 9 - 40
-        Regout_DE(109 DOWNTO 101) -- Rdst/Rsrc1/Rsrc2 => 0 - 8 
-        ;
+        Regout_DE(109 DOWNTO 101); -- Rdst/Rsrc1/Rsrc2 => 0 - 8 
+        
     REG_EM : ENTITY work.Reg GENERIC MAP(
-        151) PORT MAP(
+        152) PORT MAP(
         Clk => clk,
         Input => REGIN_EM,
         Output => REGOUT_EM,
-        Rst => reset
+        Rst => reset,
+        Fix =>'0'
         );
+        
 
     anding <= REGOUT_EM(138) AND REGOUT_MW(169);
     M : ENTITY work.Mem_Stage PORT MAP(
@@ -322,7 +376,8 @@ BEGIN
         Clk => clk,
         Input => REGIN_MW,
         Output => Regout_MW,
-        Rst => reset
+        Rst => reset,
+        Fix =>'0'
         );
 
     WB_Stage : ENTITY work.WriteBackStage

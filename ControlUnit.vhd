@@ -218,7 +218,7 @@ BEGIN
                 Call_Stack_Pointer <= '0';
                 Free_Operation <= '0';
                 Protection_Signal <= '0';
-                Memory_Read <= '0';
+                Memory_Read <= '1';
                 Memory_Write <= '0';
                 Write_Back <= '1';
                 Write_Back_2 <= '0';

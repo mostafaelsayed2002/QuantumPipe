@@ -3,14 +3,13 @@
 # rti
 
 
-Not r1
-dec r1
-dec r1
-nop
-not r2 
-dec r2
-swap r1,r2
-sub r3, r1, r2
+not r1
+inc r1
+jz r0
+not r4
+dec r4
+inc r6
+not r6
 
 
 
