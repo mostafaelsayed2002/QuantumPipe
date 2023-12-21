@@ -97,7 +97,7 @@ class Assembler:
             instruction_code = Assembler.parse_instruction(instruction)
 
             if instruction_code == None:
-                print(f"Error in line in {input_file}:{Assembler.find_error_line(instruction, input_code)}, line: {code[0]}", file=sys.stderr)
+                print(f"Error in line in {input_file}:{Assembler.find_error_line(instruction, input_code)}, line: {code[i]}", file=sys.stderr)
                 error = True
                 continue
 
@@ -234,11 +234,16 @@ class Assembler:
             instr += reg2
             instr += "0"
 
-            imm = code[3]
-            if (imm.startswith("0x")):
-                imm = int(imm[2:], 16)
+            imm = None
+            if (code[3].startswith("0x")):
+                if re.match(r'^0x[0-9A-Fa-f]+$', code[3]):
+                    imm = int(code[3][2:], 16)
             else:
-                imm = int(code[3])
+                if code[3].isdigit():
+                    imm = int(code[3])
+
+            if imm == None:
+                return None
             
             imm = bin(imm)
             imm = "0"*(20 - len(imm[2:])) + imm[2:]
