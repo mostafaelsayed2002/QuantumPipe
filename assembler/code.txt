@@ -4,12 +4,12 @@
 
 
 not r1
-inc r1
+nop 
 jz r0
-not r4
-dec r4
-inc r6
-not r6
+push r4
+push r4
+push r6
+push r6
 
 
 

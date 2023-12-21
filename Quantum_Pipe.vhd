@@ -73,8 +73,8 @@ ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
 
     SIGNAL MemDataOut : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
 
-    SIGNAL REGIN_MW : STD_LOGIC_VECTOR(176 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL REGOUT_MW : STD_LOGIC_VECTOR(176 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL REGIN_MW : STD_LOGIC_VECTOR(177 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL REGOUT_MW : STD_LOGIC_VECTOR(177 DOWNTO 0) := (OTHERS => '0');
 
     SIGNAL ORing : STD_LOGIC := '0';
     SIGNAL anding : STD_LOGIC := '0';
@@ -148,8 +148,8 @@ BEGIN
 
     --control unit  
     -- ORing <= Regout_DE(150) OR (Regout_DE(150) AND Regout_DE(0)) OR REGOUT_EM(149) OR Regout_MW(175) OR InsertNop;
-                --JMP/IMM       --NOP            --NOP           -- HD unit     -- JZ_Signal from ex stage --JZ_Signal from mem
-    ORing <= Regout_DE(150) OR REGOUT_EM(149) OR Regout_MW(175) OR InsertNop OR JZ_Signal OR REGOUT_EM(151);
+                --JMP/IMM       --NOP            --NOP           -- HD unit     -- JZ_Signal from ex stage --JZ_Signal from mem --JZ_Signal from wb
+    ORing <= Regout_DE(150) OR REGOUT_EM(149) OR Regout_MW(175) OR InsertNop OR JZ_Signal OR REGOUT_EM(151); --OR Regout_MW(177);
     
     M0 : ENTITY work.MUX_2_1 GENERIC MAP(
         5) PORT MAP(
@@ -274,7 +274,7 @@ BEGIN
         -- Regout_DE(151) --JZ 
         -- JZ_signal = 1 when the ZF =1 and the instr in ex stage is JZ
         -- JZ_Signal <= Flages(0) and Regout_DE(151);
-        JZ_Signal <= Flages(0) and  Regout_DE(151);
+        JZ_Signal <= Flages(0) and Regout_DE(151);
 
         mux_forward : ENTITY work.Mux_2_1 GENERIC MAP(3) PORT MAP(
         a => REGOUT_DE(109 downto 107), -- Rdst 001
@@ -338,6 +338,7 @@ BEGIN
         Fix =>'0'
         );
         
+   
 
     anding <= REGOUT_EM(138) AND REGOUT_MW(169);
     M : ENTITY work.Mem_Stage PORT MAP(
@@ -357,6 +358,7 @@ BEGIN
         );
 
     REGIN_MW <=
+        REGOUT_EM(151)  & -- jz-signal --- 177
         Regout_EM(150) & -------------176 port read
         Regout_EM(149) & --NOP => 175
         Regout_EM(148) & -- SwapForward => 174
@@ -372,13 +374,14 @@ BEGIN
         REGOUT_EM(40 DOWNTO 9); --Operand1 => 31 - 0 
 
     REG_MW : ENTITY work.Reg GENERIC MAP(
-        177) PORT MAP(
+        178) PORT MAP(
         Clk => clk,
         Input => REGIN_MW,
         Output => Regout_MW,
         Rst => reset,
         Fix =>'0'
         );
+        
 
     WB_Stage : ENTITY work.WriteBackStage
         PORT MAP(

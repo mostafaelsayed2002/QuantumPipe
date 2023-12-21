@@ -36,14 +36,11 @@ BEGIN
             insout => insout
         );
 
-
-    PROCESS (clk, jmpflag)
+    PROCESS (clk)
         VARIABLE pcaddoperand : INTEGER := 0;
         VARIABLE nextpc : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     BEGIN
-        if rising_edge(jmpflag) then
-            pc <= jmplocation;
-        elsIF rising_edge(clk) THEN
+        IF rising_edge(clk) THEN
 
             IF fixpc = '1' THEN
                 nextpc := pc;
@@ -52,11 +49,15 @@ BEGIN
                 nextpc := STD_LOGIC_VECTOR((unsigned(nextpc)) + 1);
             END IF;
 
-            pc <= nextpc;
+            IF jmpflag = '0' THEN
+                pc <= nextpc;
+            ELSE
+                pc <= jmplocation;
+            END IF;
 
             pcval <= nextpc;
-        END IF;
 
+        END IF;
     END PROCESS;
     instr <= insout;
 END ARCHITECTURE; -- FetchingStageArch

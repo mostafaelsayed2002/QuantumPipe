@@ -30,10 +30,14 @@ ARCHITECTURE RegisterFileArch OF RegisterFile IS
     SIGNAL R6 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL R7 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL CCR : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
-BEGIN
+    BEGIN
+    
+    CCRout <= CCR;
+    
     PROCESS (Clk)
     BEGIN
-        IF rising_edge(Clk) THEN
+    IF rising_edge(Clk) THEN
+            CCR <= CCRin;
             IF (WB1_Signal = '1') THEN
 
                 CASE WB1_Address IS
@@ -82,8 +86,6 @@ BEGIN
         END IF;
     END PROCESS;
 
-    CCR <= CCRin;
-    CCRout <= CCR;
 
     PROCESS (Clk)
     BEGIN
