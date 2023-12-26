@@ -16,10 +16,39 @@
 # nop
 # sub r5, r1,r4
 
-dec r1
-inc r2
-swap r1, r2
-sub r5, r2,r1
+
+# nice test case
+#add r1,r1,r4
+#ldm r4, 0x0000F
+#jz r4
+
+
+# not r0 
+# push r0
+# pop r1
+# dec r1
+
+
+
+# this case has two problems 
+# - load-use 
+# - D & WB Problem if the commands are seprated with a nop
+# ldm r4, 0x0000F
+# jmp r4
+
+
+not r0 
+not r1 
+addi r3, r3, 0x2
+std r3, 2
+std r4, 3
+inc r5
+inc r5
+inc r5
+
+
+
+
 
 
 
