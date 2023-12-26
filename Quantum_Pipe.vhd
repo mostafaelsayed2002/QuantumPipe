@@ -98,6 +98,8 @@ ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
     SIGNAL mem_flags_out : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
     SIGNAL flags_mem_or_ex : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
 
+    SIGNAL decode_mux_src1 : STD_LOGIC_VECTOR(2 DOWNTO 0);
+    SIGNAL decode_mux_src2 : STD_LOGIC_VECTOR(2 DOWNTO 0);
 BEGIN
     PROCESS
     BEGIN
@@ -137,8 +139,8 @@ BEGIN
         );
     -- Hazard Detection unit
     Hazard_Detection_unit : ENTITY work.Hazard_Detection PORT MAP(
-        Rsrc1 => Regout_FD(7 DOWNTO 5),
-        Rsrc2 => Regout_FD(4 DOWNTO 2),
+        Rsrc1 => decode_mux_src1,
+        Rsrc2 => decode_mux_src2,
         Rdst => Regout_DE(109 DOWNTO 107),
         MemRead => Regout_DE(135),
         InsertNop => InsertNop,
@@ -198,7 +200,9 @@ BEGIN
         CCRin => flags_mem_or_ex,
         JZ => JZ,
         CCRout => Flages,
-        reset => reset
+        reset => reset,
+        mux_src1 => decode_mux_src1,
+        mux_src2 => decode_mux_src2
         );
     RegIN_DE <=
         Flages & -- flags -- 153 --- 155

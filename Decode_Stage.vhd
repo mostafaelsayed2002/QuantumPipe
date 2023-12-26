@@ -12,13 +12,17 @@ ENTITY Decode_Stage IS
         WB2_data : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
         WB1_Signal : IN STD_LOGIC;
         WB2_Signal : IN STD_LOGIC;
+
+        mux_src1 : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+        mux_src2 : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+
         Data_R1 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
         Data_R2 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
         jmp_Flag : OUT STD_LOGIC := '0';
-        CCRin : IN STD_LOGIC_VECTOR(2 DOWNTO 0) ;
-        CCRout : OUT STD_LOGIC_VECTOR(2 DOWNTO 0):= (OTHERS => '0');
+        CCRin : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
+        CCRout : OUT STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
         JZ : OUT STD_LOGIC;
-        reset  : IN STD_LOGIC
+        reset : IN STD_LOGIC
     );
 END ENTITY Decode_Stage;
 ARCHITECTURE Decode_Stage_Arch OF Decode_Stage IS
@@ -46,8 +50,8 @@ BEGIN
     Mux2_in <= '1' WHEN ((opCode = "10101") OR (opCode = "10110")) ELSE
         '0';
 
-    Mux1_in <= Mux2_in or ORING;
-        
+    Mux1_in <= Mux2_in OR ORING;
+
     Mux1 : ENTITY work.Mux_2_1 GENERIC MAP(3) PORT MAP(
         a => Rsrc1,
         b => Rdst,
@@ -76,14 +80,17 @@ BEGIN
         WB2_Address => WB2_Address,
         WB1_Signal => WB1_Signal,
         WB2_Signal => WB2_Signal,
-        reset =>reset
+        reset => reset
         );
+
+    mux_src1 <= Mux1_Out;
+    mux_src2 <= Mux2_Out;
     CCRout <= CCR_Temp;
 
     JZ <= '1' WHEN opCode = "01101" ELSE
         '0';
     temp2 <= '1' WHEN (opCode(4 DOWNTO 1) = "0111") ELSE
         '0';
-    jmp_Flag <=  temp2; -- (temp1) OR (temp2);
+    jmp_Flag <= temp2; -- (temp1) OR (temp2);
 
 END ARCHITECTURE Decode_Stage_Arch;

@@ -33,7 +33,7 @@ instructions_table = {
                [IsaType.ONE_OPERAND, "01011"],
         "free":[IsaType.ONE_OPERAND, "01100"],
         "jz":  [IsaType.ONE_OPERAND, "01101"],
-        "jmo": [IsaType.ONE_OPERAND, "01110"],
+        "jmp": [IsaType.ONE_OPERAND, "01110"],
         "call":[IsaType.ONE_OPERAND, "01111"],
 
         # one destination two srcs
