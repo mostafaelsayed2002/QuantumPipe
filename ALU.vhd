@@ -77,6 +77,8 @@ BEGIN
                 c_new(1 DOWNTO 0) <= SetFlag(imm_res);
                 IF in1 = X"FFFF_FFFF" THEN
                     c_new(2) <= '1';
+                ELSE
+                    c_new(2) <= c_old(2);
                 END IF;
 
                 outp <= imm_res;
@@ -97,6 +99,8 @@ BEGIN
                 c_new(1 DOWNTO 0) <= SetFlag(imm_res);
                 IF (imm_res < in1) OR (imm_res < in2) THEN
                     c_new(2) <= '1';
+                ELSE
+                    c_new(2) <= c_old(2);
                 END IF;
                 outp <= imm_res;
 
