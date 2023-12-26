@@ -112,7 +112,7 @@ class Assembler:
                     else:
                         f.write(i + "\n")
                 if len(code) < 4096:
-                    empty_range = 4096 - len(code)
+                    empty_range = 4096 - len(code) - 1
                     f.write("\n")
                     for i in range(empty_range): 
                         if (i == empty_range - 1):

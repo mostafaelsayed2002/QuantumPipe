@@ -15,3 +15,25 @@ add wave -position end  sim:/quantum_pipe/D_Port_Read
 add wave -position end  sim:/quantum_pipe/D_Port_Write
 add wave -position end  sim:/quantum_pipe/in_port
 add wave -position end  sim:/quantum_pipe/out_port
+
+--------------------------
+
+
+add wave -position end  sim:/quantum_pipe/D/RF/R0
+add wave -position end  sim:/quantum_pipe/D/RF/R1
+add wave -position end  sim:/quantum_pipe/D/RF/R2
+add wave -position end  sim:/quantum_pipe/D/RF/R3
+add wave -position end  sim:/quantum_pipe/D/RF/R4
+add wave -position end  sim:/quantum_pipe/D/RF/R5
+add wave -position end  sim:/quantum_pipe/D/RF/R6
+add wave -position end  sim:/quantum_pipe/D/RF/R7
+add wave -position end  sim:/quantum_pipe/D/RF/CCR
+add wave -position 2  sim:/quantum_pipe/F/pc
+add wave -position end  sim:/quantum_pipe/M/Sp
+add wave -position 0  sim:/quantum_pipe/M/clk
+add wave -position 0  sim:/quantum_pipe/clk
+add wave -position 1  sim:/quantum_pipe/int
+add wave -position end  sim:/quantum_pipe/in_port
+add wave -position end  sim:/quantum_pipe/out_port
+add wave -position 2  sim:/quantum_pipe/reset
+add wave -position 3  sim:/quantum_pipe/F/pc

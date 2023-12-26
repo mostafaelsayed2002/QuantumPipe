@@ -16,6 +16,7 @@ BEGIN
     WITH (wbsrc) SELECT
     wbdata <= memdata WHEN "00",
         aludata WHEN "01",
+        aludata WHEN "10",
         (OTHERS => '0') WHEN OTHERS;
 
 END WriteBackStageArch; -- WriteBackStage

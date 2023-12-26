@@ -4,26 +4,26 @@ USE ieee.std_logic_1164.ALL;
 ENTITY ControlUnit IS
     PORT (
         Op_Code : IN STD_LOGIC_VECTOR(4 DOWNTO 0);
-        IMM_Jump : OUT STD_LOGIC :='0' ; -- Indicates whether an immediate jump is to be performed.
-        No_Operation : OUT STD_LOGIC :='0'; -- Signifies a no-operation condition.
-        IMM_Effective_Address : OUT STD_LOGIC :='0'; -- Relates to the use of an immediate value for an effective address.
-        ALU_Source_Select : OUT STD_LOGIC :='0'; -- Denotes the source selection for the Arithmetic Logic Unit (ALU).
-        Forwarding_Source : OUT STD_LOGIC :='0'; -- Represents the source for forwarding data.
+        IMM_Jump : OUT STD_LOGIC := '0'; -- Indicates whether an immediate jump is to be performed.
+        No_Operation : OUT STD_LOGIC := '0'; -- Signifies a no-operation condition.
+        IMM_Effective_Address : OUT STD_LOGIC := '0'; -- Relates to the use of an immediate value for an effective address.
+        ALU_Source_Select : OUT STD_LOGIC := '0'; -- Denotes the source selection for the Arithmetic Logic Unit (ALU).
+        Forwarding_Source : OUT STD_LOGIC := '0'; -- Represents the source for forwarding data.
         ALU_Op_Code : OUT STD_LOGIC_VECTOR(3 DOWNTO 0) := "0000"; -- Specifies the operation code for the ALU.
-        Implicit_Sources : OUT STD_LOGIC_VECTOR(1 DOWNTO 0) :="00"; -- Indicates the use of implicit sources.
-        Forwarding_Swap : OUT STD_LOGIC :='0'; -- Suggests swapping of forwarding sources.
-        Call_Stack_Pointer : OUT STD_LOGIC :='0'; -- Signifies a call operation on the stack pointer.
-        Free_Operation : OUT STD_LOGIC :='0'; -- Represents a free operation.
-        Protection_Signal : OUT STD_LOGIC :='0'; -- Indicates a protection condition.
-        Memory_Read : OUT STD_LOGIC :='0'; -- Denotes a memory read operation.
-        Memory_Write : OUT STD_LOGIC :='0'; -- Denotes a memory write operation.
-        Write_Back : OUT STD_LOGIC :='0'; -- Signifies a write-back operation.
-        Write_Back_2 : OUT STD_LOGIC :='0'; -- A secondary write-back operation.
-        Write_Back_Source : OUT STD_LOGIC_VECTOR(1 DOWNTO 0) :="00"; -- Specifies the source for write-back.
-        Port_Read : OUT STD_LOGIC :='0'; -- Signifies a port read operation.
-        Port_Write : OUT STD_LOGIC :='0'; -- Denotes a port write operation.
-        Stack_Pointer_Select : OUT STD_LOGIC :='0'; -- Indicates the selection of the stack pointer.
-        Stack_Pointer_Update : OUT STD_LOGIC :='0' -- Denotes an update operation on the stack pointer.
+        Implicit_Sources : OUT STD_LOGIC_VECTOR(1 DOWNTO 0) := "00"; -- Indicates the use of implicit sources.
+        Forwarding_Swap : OUT STD_LOGIC := '0'; -- Suggests swapping of forwarding sources.
+        Call_Stack_Pointer : OUT STD_LOGIC := '0'; -- Signifies a call operation on the stack pointer.
+        Free_Operation : OUT STD_LOGIC := '0'; -- Represents a free operation.
+        Protection_Signal : OUT STD_LOGIC := '0'; -- Indicates a protection condition.
+        Memory_Read : OUT STD_LOGIC := '0'; -- Denotes a memory read operation.
+        Memory_Write : OUT STD_LOGIC := '0'; -- Denotes a memory write operation.
+        Write_Back : OUT STD_LOGIC := '0'; -- Signifies a write-back operation.
+        Write_Back_2 : OUT STD_LOGIC := '0'; -- A secondary write-back operation.
+        Write_Back_Source : OUT STD_LOGIC_VECTOR(1 DOWNTO 0) := "00"; -- Specifies the source for write-back.
+        Port_Read : OUT STD_LOGIC := '0'; -- Signifies a port read operation.
+        Port_Write : OUT STD_LOGIC := '0'; -- Denotes a port write operation.
+        Stack_Pointer_Select : OUT STD_LOGIC := '0'; -- Indicates the selection of the stack pointer.
+        Stack_Pointer_Update : OUT STD_LOGIC := '0' -- Denotes an update operation on the stack pointer.
     );
 END ENTITY ControlUnit;
 
@@ -49,14 +49,11 @@ BEGIN
                 Stack_Pointer_Select <= '0';
                 Forwarding_Source <= '0';
                 ALU_Source_Select <= '0';
-                
-
             WHEN "00001" => -- RET
                 IMM_Jump <= '1';
                 No_Operation <= '1';
                 ALU_Op_Code <= "0000";
                 Forwarding_Swap <= '0';
-                Call_Stack_Pointer <= '0';
                 Free_Operation <= '0';
                 Protection_Signal <= '0';
                 Memory_Read <= '0';
@@ -65,14 +62,16 @@ BEGIN
                 Write_Back_2 <= '0';
                 Port_Read <= '0';
                 Port_Write <= '0';
-                Stack_Pointer_Select <= '0';
+                Stack_Pointer_Select <= '1';
+                Write_Back_Source <= "00";
+                Stack_Pointer_Update <= '0';
+                Call_Stack_Pointer <= '1';
 
             WHEN "00010" => -- RTI
                 IMM_Jump <= '1';
                 No_Operation <= '1';
                 ALU_Op_Code <= "0000";
                 Forwarding_Swap <= '0';
-                Call_Stack_Pointer <= '0';
                 Free_Operation <= '0';
                 Protection_Signal <= '0';
                 Memory_Read <= '0';
@@ -81,7 +80,10 @@ BEGIN
                 Write_Back_2 <= '0';
                 Port_Read <= '0';
                 Port_Write <= '0';
-                Stack_Pointer_Select <= '0';
+                Stack_Pointer_Select <= '1';
+                Write_Back_Source <= "01";
+                Stack_Pointer_Update <= '0';
+                Call_Stack_Pointer <= '1';
 
             WHEN "00011" => -- NOT
                 IMM_Jump <= '0';
@@ -160,6 +162,7 @@ BEGIN
                 Stack_Pointer_Select <= '0';
 
             WHEN "00111" => -- OUT
+                ALU_Op_Code <= "1110"; --- mostafa :)
                 IMM_Jump <= '0';
                 No_Operation <= '0';
                 Forwarding_Source <= '0';
@@ -170,6 +173,7 @@ BEGIN
                 Protection_Signal <= '0';
                 Memory_Read <= '0';
                 Memory_Write <= '0';
+                Write_Back_Source <= "10";
                 Write_Back <= '0';
                 Write_Back_2 <= '0';
                 Port_Read <= '0';
@@ -177,6 +181,7 @@ BEGIN
                 Stack_Pointer_Select <= '0';
 
             WHEN "01000" => -- IN
+                ALU_Op_Code <= "1110"; --- mostafa :)
                 IMM_Jump <= '0';
                 No_Operation <= '0';
                 Forwarding_Swap <= '0';
@@ -209,7 +214,7 @@ BEGIN
                 Port_Read <= '0';
                 Port_Write <= '0';
                 Stack_Pointer_Select <= '1';
-                Stack_Pointer_Update <= '0';
+                Stack_Pointer_Update <= '1';
 
             WHEN "01010" => -- POP
                 IMM_Jump <= '0';
@@ -225,7 +230,7 @@ BEGIN
                 Port_Read <= '0';
                 Port_Write <= '0';
                 Stack_Pointer_Select <= '1';
-                Stack_Pointer_Update <= '1';
+                Stack_Pointer_Update <= '0';
                 Write_Back_Source <= "00";
 
             WHEN "01011" => -- Protect
@@ -306,12 +311,13 @@ BEGIN
                 Free_Operation <= '0';
                 Protection_Signal <= '0';
                 Memory_Read <= '0';
-                Memory_Write <= '0';
+                Memory_Write <= '1';
                 Write_Back <= '0';
                 Write_Back_2 <= '0';
                 Port_Read <= '0';
                 Port_Write <= '0';
-                Stack_Pointer_Select <= '0';
+                Stack_Pointer_Select <= '1';
+                Stack_Pointer_Update <= '1';
 
             WHEN "10000" => -- ADD
                 IMM_Jump <= '0';
