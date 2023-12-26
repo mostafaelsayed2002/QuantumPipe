@@ -301,8 +301,8 @@ BEGIN
         SWAP_FW_Ex => REGOUT_EM(148), --0
         SWAP_FW_Mem => REGOUT_MW(174), --0
 
-        SEL_OP1 => FW_SEL_2,
-        SEL_OP2 => FW_SEL_1,
+        SEL_OP1 => FW_SEL_1,
+        SEL_OP2 => FW_SEL_2,
         exchange => REGOUT_DE(146)
         );
     REGIN_EM <=

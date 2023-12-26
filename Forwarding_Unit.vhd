@@ -91,17 +91,17 @@ BEGIN
             R2_equal_Rdst2_Mem := '0';
         END IF;
 
-        IF SWAP_FW_Mem = '1' OR SWAP_FW_Ex = '1' THEN
-            IF SWAP_FW_Ex = '1' AND R1_equal_Rdst1_Ex = '1' THEN
+        IF (SWAP_FW_Mem = '1') OR (SWAP_FW_Ex = '1') THEN
+            IF (SWAP_FW_Ex = '1') AND (R1_equal_Rdst1_Ex = '1') THEN
                 res1 := "100"; -- select Rdst1 EX 
             ELSE
-                IF SWAP_FW_Ex = '1' AND R1_equal_Rdst2_Ex = '1' THEN
+                IF (SWAP_FW_Ex = '1') AND (R1_equal_Rdst2_Ex = '1') THEN
                     res1 := "010"; -- select Rdst2 EX 
                 ELSE
-                    IF SWAP_FW_Mem = '1' AND R1_equal_Rdst1_Mem = '1' THEN
+                    IF (SWAP_FW_Mem = '1') AND (R1_equal_Rdst1_Mem = '1') THEN
                         res1 := "001"; -- select Rdst1 mem 
                     ELSE
-                        IF SWAP_FW_Mem = '1' AND R1_equal_Rdst2_Mem = '1' THEN
+                        IF (SWAP_FW_Mem = '1') AND (R1_equal_Rdst2_Mem = '1') THEN
                             res1 := "011"; -- select Rdst2 mem  
                         ELSE
                             res1 := "000"; -- default
@@ -109,16 +109,16 @@ BEGIN
                     END IF;
                 END IF;
             END IF;
-            IF SWAP_FW_Ex = '1' AND R2_equal_Rdst1_Ex = '1' THEN
+            IF (SWAP_FW_Ex = '1') AND (R2_equal_Rdst1_Ex = '1') THEN
                 res2 := "100"; -- select Rdst1 EX 
             ELSE
-                IF SWAP_FW_Ex = '1' AND R2_equal_Rdst2_Ex = '1' THEN
+                IF (SWAP_FW_Ex = '1') AND (R2_equal_Rdst2_Ex = '1') THEN
                     res2 := "010"; -- select Rdst2 EX 
                 ELSE
-                    IF SWAP_FW_Mem = '1' AND R2_equal_Rdst1_Mem = '1' THEN
+                    IF (SWAP_FW_Mem = '1') AND (R2_equal_Rdst1_Mem = '1') THEN
                         res2 := "001"; -- select Rdst1 mem 
                     ELSE
-                        IF SWAP_FW_Mem = '1' AND R2_equal_Rdst2_Mem = '1' THEN
+                        IF (SWAP_FW_Mem = '1') AND (R2_equal_Rdst2_Mem = '1') THEN
                             res2 := "011"; -- select Rdst2 mem 
                         ELSE
                             res2 := "000"; -- default
@@ -127,19 +127,19 @@ BEGIN
                 END IF;
             END IF;
         ELSE
-            IF WB_Ex = '1' AND R1_equal_Rdst1_Ex = '1' THEN
+            IF (WB_Ex = '1') AND (R1_equal_Rdst1_Ex = '1') THEN
                 res1 := "100"; -- select Rdst1 EX 
             ELSE
-                IF WB_Mem = '1' AND R1_equal_Rdst1_Mem = '1' THEN
+                IF (WB_Mem = '1') AND (R1_equal_Rdst1_Mem = '1') THEN
                     res1 := "001"; -- select Rdst1 mem 
                 ELSE
                     res1 := "000"; -- select Default
                 END IF;
             END IF;
-            IF WB_Ex = '1' AND R2_equal_Rdst1_Ex = '1' THEN
+            IF (WB_Ex = '1') AND (R2_equal_Rdst1_Ex = '1') THEN
                 res2 := "100"; -- select Rdst1 EX 
             ELSE
-                IF WB_Mem = '1' AND R2_equal_Rdst1_Mem = '1' THEN
+                IF (WB_Mem = '1') AND (R2_equal_Rdst1_Mem = '1') THEN
                     res2 := "001"; -- select Rdst1 mem 
                 ELSE
                     res2 := "000"; -- select Default
@@ -147,13 +147,13 @@ BEGIN
             END IF;
         END IF;
 
-        -- IF exchange = '0' THEN
-        --     SEL_OP1 <= res2;
-        --     SEL_OP2 <= res1;
-        -- ELSE
-        SEL_OP1 <= res1;
-        SEL_OP2 <= res2;
-        -- END IF;
+        IF exchange = '0' THEN
+            SEL_OP1 <= res2;
+            SEL_OP2 <= res1;
+        ELSE
+            SEL_OP1 <= res1;
+            SEL_OP2 <= res2;
+        END IF;
 
     END PROCESS;
 END ARCHITECTURE Arch_Forwarding_Unit;
