@@ -37,3 +37,10 @@ add wave -position end  sim:/quantum_pipe/in_port
 add wave -position end  sim:/quantum_pipe/out_port
 add wave -position 2  sim:/quantum_pipe/reset
 add wave -position 3  sim:/quantum_pipe/F/pc
+
+
+
+
+
+force -freeze sim:/quantum_pipe/int 0 0
+force -freeze sim:/quantum_pipe/reset 1 0

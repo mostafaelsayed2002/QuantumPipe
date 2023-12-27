@@ -11,7 +11,8 @@ ENTITY InstructionMemory IS
     PORT (
         clk : IN STD_LOGIC;
         pc : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
-        insout : OUT STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0')
+        insout : OUT STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
+        reset : IN STD_LOGIC
     );
 END InstructionMemory;
 ARCHITECTURE InstructionMemoryArch OF InstructionMemory IS
@@ -48,7 +49,7 @@ ARCHITECTURE InstructionMemoryArch OF InstructionMemory IS
 BEGIN
     PROCESS (clk)
     BEGIN
-        IF rising_edge(clk) THEN
+        IF rising_edge(clk) AND reset = '0' THEN
             insout <= mem(to_integer(unsigned(pc(11 DOWNTO 0))));
         END IF;
     END PROCESS;

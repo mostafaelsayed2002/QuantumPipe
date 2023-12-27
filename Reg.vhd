@@ -17,12 +17,12 @@ ARCHITECTURE ARCH_Reg OF Reg IS
 BEGIN
     PROCESS (Clk, reset)
     BEGIN
-            IF reset = '1' THEN
-                Output <= (OTHERS => '0');
-            ELSIF  Fix = '0' THEN
-                IF rising_edge(Clk) THEN
-                Output <= Input;   
-                END IF;
+        IF reset = '1' THEN
+            Output <= (OTHERS => '0');
+        ELSIF Fix = '0' THEN
+            IF rising_edge(Clk) THEN
+                Output <= Input;
             END IF;
+        END IF;
     END PROCESS;
 END ARCH_Reg;

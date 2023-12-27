@@ -11,22 +11,22 @@ ENTITY Quantum_Pipe IS
 END Quantum_Pipe;
 
 ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
-    SIGNAL clk : STD_LOGIC := '0';
+    SIGNAL clk : STD_LOGIC := '1';
     SIGNAL reset : STD_LOGIC := '0';
 
     SIGNAL fixpc : STD_LOGIC := '0';
     SIGNAL jmpflag : STD_LOGIC := '0';
     SIGNAL pcval : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL instr : STD_LOGIC_VECTOR(15 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL Regout_FD : STD_LOGIC_VECTOR(48 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL RegIN_FD : STD_LOGIC_VECTOR(48 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL Regout_FD : STD_LOGIC_VECTOR(80 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL RegIN_FD : STD_LOGIC_VECTOR(80 DOWNTO 0) := (OTHERS => '0');
 
     SIGNAL Data_R1 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL Data_R2 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     --/////////////////////////////////////////
     SIGNAL zero_flag : STD_LOGIC := '0';
-    SIGNAL Regout_DE : STD_LOGIC_VECTOR(155 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL RegIN_DE : STD_LOGIC_VECTOR(155 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL Regout_DE : STD_LOGIC_VECTOR(187 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL RegIN_DE : STD_LOGIC_VECTOR(187 DOWNTO 0) := (OTHERS => '0');
 
     -- waithing for making forwarding unit
     SIGNAL Fw_Sel_1 : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
@@ -126,11 +126,12 @@ BEGIN
         reset => reset
         );
     RegIN_FD <=
+        in_port & --  80 => 49 
         int & -- 48
         pcval & -- 47 => 16 
         instr; -- 15 => 0
     REG_FD : ENTITY work.Reg GENERIC MAP(
-        49) PORT MAP(
+        81) PORT MAP(
         Clk => clk,
         Input => RegIN_FD,
         Output => Regout_FD,
@@ -144,7 +145,10 @@ BEGIN
         Rdst => Regout_DE(109 DOWNTO 107),
         MemRead => Regout_DE(135),
         InsertNop => InsertNop,
-        FixPC => fixpc
+        FixPC => fixpc,
+        wb => Regout_MW(173),
+        wb_rdst => Regout_MW(40 DOWNTO 38),
+        opcode_d => Regout_FD(15 DOWNTO 11)
         );
 
     sub_or <= Regout_FD(48) OR Regout_DE(152) OR REGOUT_EM(152) OR REGOUT_MW(178);
@@ -205,6 +209,7 @@ BEGIN
         mux_src2 => decode_mux_src2
         );
     RegIN_DE <=
+        Regout_FD(80 DOWNTO 49) & --  187 => 156  
         Flages & -- flags -- 153 --- 155
         Regout_FD(48) & -- INT --- 152 
         JZ & -- added new for jz -- 151
@@ -238,7 +243,7 @@ BEGIN
         zero_flag; -- no longer needed but leave him alone
 
     REG_DE : ENTITY work.Reg GENERIC MAP(
-        156) PORT MAP(
+        188) PORT MAP(
         Clk => clk,
         Input => RegIN_DE,
         Output => Regout_DE,
@@ -274,7 +279,7 @@ BEGIN
         c_old => Flages,
 
         PORTR => Regout_DE(129),
-        PORT_DATA => in_port
+        PORT_DATA => Regout_DE(187 DOWNTO 156)
         );
     -- Regout_DE(151) --JZ 
     -- JZ_signal = 1 when the ZF =1 and the instr in ex stage is JZ
@@ -367,7 +372,7 @@ BEGIN
         );
 
     REGIN_MW <=
-        REGOUT_EM(152) & --- int -- 178 
+        REGOUT_EM(152) & --- int -- 178   
         REGOUT_EM(151) & -- jz-signal --- 177
         Regout_EM(150) & -------------176 port read
         Regout_EM(149) & --NOP => 175
@@ -380,8 +385,8 @@ BEGIN
         SPNextVal & -- 136 - 105
         MemDataOut & -- 104 - 73 
         REGOUT_EM(72 DOWNTO 41) & --ALU_output => 72 - 41
-        REGOUT_EM(8 DOWNTO 0) & -- Rdst/Rsrc1/Rsrc2 => 40 - 32
-        REGOUT_EM(40 DOWNTO 9); --Operand1 => 31 - 0 
+        REGOUT_EM(8 DOWNTO 0) & -- Rdst/Rsrc1/Rsrc2 => 40 - 32   
+        REGOUT_EM(40 DOWNTO 9); --Operand1 => 31 - 0  
     REG_MW : ENTITY work.Reg GENERIC MAP(
         179) PORT MAP(
         Clk => clk,

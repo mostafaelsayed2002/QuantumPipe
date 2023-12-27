@@ -34,16 +34,17 @@ BEGIN
         PORT MAP(
             clk => clk,
             pc => pc,
-            insout => insout
+            insout => insout,
+            reset => reset
         );
 
-    PROCESS (clk,reset)
+    PROCESS (clk)
         VARIABLE pcaddoperand : INTEGER := 0;
         VARIABLE nextpc : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     BEGIN
-        IF reset = '1' THEN
-            pc <= (others =>'0');
-        elsIF rising_edge(clk) THEN
+        IF rising_edge(clk) AND reset = '1' THEN
+            pc <= (OTHERS => '0');
+        ELSIF rising_edge(clk) THEN
             IF fixpc = '1' THEN
                 nextpc := pc;
             ELSE
@@ -60,5 +61,6 @@ BEGIN
             pcval <= nextpc;
         END IF;
     END PROCESS;
-    instr <= insout when reset = '0' else X"0000";
+    instr <= insout WHEN reset = '0' ELSE
+        X"0000";
 END ARCHITECTURE; -- FetchingStageArch

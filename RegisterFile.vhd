@@ -17,7 +17,7 @@ ENTITY RegisterFile IS
         WB2_Address : IN STD_LOGIC_VECTOR(2 DOWNTO 0);
         WB1_Signal : IN STD_LOGIC;
         WB2_Signal : IN STD_LOGIC;
-        reset  : IN STD_LOGIC
+        reset : IN STD_LOGIC
     );
 END ENTITY RegisterFile;
 
@@ -31,23 +31,23 @@ ARCHITECTURE RegisterFileArch OF RegisterFile IS
     SIGNAL R6 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL R7 : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     SIGNAL CCR : STD_LOGIC_VECTOR(2 DOWNTO 0) := (OTHERS => '0');
-    BEGIN
-    
+BEGIN
+
     CCRout <= CCR;
-    
-    PROCESS (Clk,reset)
+
+    PROCESS (Clk, reset)
     BEGIN
-    IF reset = '1' THEN
-     R0 <=  (OTHERS => '0');
-     R1 <=  (OTHERS => '0');
-     R2 <=  (OTHERS => '0');
-     R3 <=  (OTHERS => '0');
-     R4 <=  (OTHERS => '0');
-     R5 <=  (OTHERS => '0');
-     R6 <=  (OTHERS => '0');
-     R7 <=  (OTHERS => '0');
-    CCR <=  (OTHERS => '0');
-    ElsIF rising_edge(Clk) THEN
+        IF reset = '1' THEN
+            R0 <= (OTHERS => '0');
+            R1 <= (OTHERS => '0');
+            R2 <= (OTHERS => '0');
+            R3 <= (OTHERS => '0');
+            R4 <= (OTHERS => '0');
+            R5 <= (OTHERS => '0');
+            R6 <= (OTHERS => '0');
+            R7 <= (OTHERS => '0');
+            CCR <= (OTHERS => '0');
+        ELSIF rising_edge(Clk) THEN
             CCR <= CCRin;
             IF (WB1_Signal = '1') THEN
 
@@ -92,12 +92,8 @@ ARCHITECTURE RegisterFileArch OF RegisterFile IS
                         R7 <= Rin2;
                 END CASE;
             END IF;
-
-
         END IF;
     END PROCESS;
-
-
     PROCESS (Clk)
     BEGIN
         -- IF reset = '1' THEN
