@@ -23,7 +23,8 @@ ENTITY Forwarding_Unit IS
         exchange : IN STD_LOGIC;
 
         SEL_OP1 : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
-        SEL_OP2 : OUT STD_LOGIC_VECTOR(2 DOWNTO 0)
+        SEL_OP2 : OUT STD_LOGIC_VECTOR(2 DOWNTO 0);
+        Alu_Src : IN STD_LOGIC
     );
 END ENTITY Forwarding_Unit;
 
@@ -147,13 +148,17 @@ BEGIN
             END IF;
         END IF;
 
-        IF exchange = '0' THEN
-            SEL_OP1 <= res2;
-            SEL_OP2 <= res1;
-        ELSE
+        IF Alu_Src = '0' THEN
             SEL_OP1 <= res1;
-            SEL_OP2 <= res2;
+            SEL_OP2 <= "000";
+        ELSE
+            IF exchange = '0' THEN
+                SEL_OP1 <= res2;
+                SEL_OP2 <= res1;
+            ELSE
+                SEL_OP1 <= res1;
+                SEL_OP2 <= res2;
+            END IF;
         END IF;
-
     END PROCESS;
 END ARCHITECTURE Arch_Forwarding_Unit;

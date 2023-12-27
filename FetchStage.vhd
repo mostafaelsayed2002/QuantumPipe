@@ -34,14 +34,15 @@ BEGIN
         PORT MAP(
             clk => clk,
             pc => pc,
-            insout => insout
+            insout => insout,
+            reset => reset
         );
 
-    PROCESS (clk,reset)
+    PROCESS (clk)
         VARIABLE pcaddoperand : INTEGER := 0;
         VARIABLE nextpc : STD_LOGIC_VECTOR(31 DOWNTO 0) := (OTHERS => '0');
     BEGIN
-        IF reset = '1' THEN
+        IF rising_edge(clk) AND reset = '1' THEN
             pc <= (others =>'0');
         elsIF rising_edge(clk) THEN
             IF fixpc = '1' THEN
