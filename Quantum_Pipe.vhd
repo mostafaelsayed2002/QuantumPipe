@@ -100,6 +100,7 @@ ARCHITECTURE Arch_Quantum_Pipe OF Quantum_Pipe IS
 
     SIGNAL decode_mux_src1 : STD_LOGIC_VECTOR(2 DOWNTO 0);
     SIGNAL decode_mux_src2 : STD_LOGIC_VECTOR(2 DOWNTO 0);
+    SIGNAL invert_clk : STD_LOGIC;
 BEGIN
     PROCESS
     BEGIN
@@ -136,7 +137,8 @@ BEGIN
         Input => RegIN_FD,
         Output => Regout_FD,
         reset => reset,
-        Fix => fixpc
+        Fix => fixpc,
+        isWb => '0'
         );
     -- Hazard Detection unit
     Hazard_Detection_unit : ENTITY work.Hazard_Detection PORT MAP(
@@ -145,11 +147,11 @@ BEGIN
         Rdst => Regout_DE(109 DOWNTO 107),
         MemRead => Regout_DE(135),
         InsertNop => InsertNop,
-        FixPC => fixpc,
-        wb => Regout_MW(173),
-        wb_rdst => Regout_MW(40 DOWNTO 38),
-        opcode_d => Regout_FD(15 DOWNTO 11)
+        FixPC => fixpc
         );
+    -- wb => Regout_MW(173),
+    -- wb_rdst => Regout_MW(40 DOWNTO 38),
+    -- opcode_d => Regout_FD(15 DOWNTO 11)
 
     sub_or <= Regout_FD(48) OR Regout_DE(152) OR REGOUT_EM(152) OR REGOUT_MW(178);
     --control unit  
@@ -189,6 +191,8 @@ BEGIN
         Stack_Pointer_Select => D_Stack_Pointer_Select, -- sp select
         Stack_Pointer_Update => D_Stack_Pointer_Update -- sp operation 
         );
+
+    -- invert_clk <= NOT clk;
     D : ENTITY work.Decode_Stage PORT MAP(
         Clk => clk,
         Instruction => Regout_FD(15 DOWNTO 0),
@@ -248,7 +252,8 @@ BEGIN
         Input => RegIN_DE,
         Output => Regout_DE,
         reset => reset,
-        Fix => '0'
+        Fix => '0',
+        isWb => '0'
         );
 
     --*-----------------------------------
@@ -343,7 +348,8 @@ BEGIN
         Input => REGIN_EM,
         Output => REGOUT_EM,
         reset => reset,
-        Fix => '0'
+        Fix => '0',
+        isWb => '0'
         );
     flags_mem_or_ex <= CCRin WHEN RTI_detector = '0' ELSE
         mem_flags_out;
@@ -393,7 +399,8 @@ BEGIN
         Input => REGIN_MW,
         Output => Regout_MW,
         reset => reset,
-        Fix => '0'
+        Fix => '0',
+        isWb => '1'
         );
     WB_Stage : ENTITY work.WriteBackStage
         PORT MAP(
