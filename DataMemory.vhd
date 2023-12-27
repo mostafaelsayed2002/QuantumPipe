@@ -37,8 +37,6 @@ BEGIN
         VARIABLE helper12 : STD_LOGIC_VECTOR(11 DOWNTO 0) := (OTHERS => '0');
 
     BEGIN
-        ram(2) <= (OTHERS => '0');
-        ram(3)(15 DOWNTO 0) <= X"0FFA";
 
         IF reset = '1' THEN
             ram <= (OTHERS => (OTHERS => '0'));

@@ -21,7 +21,10 @@ force -freeze sim:/quantum_pipe/reset 1 0
 run
 run
 
+
 force -freeze sim:/quantum_pipe/reset 0 0
+run
+run
 run
 run
 run
@@ -42,9 +45,3 @@ force -freeze sim:/quantum_pipe/in_port X\"FFFFFFFF\" 0
 run
 
 force -freeze sim:/quantum_pipe/in_port X\"FFFFFFFF\" 0
-run
-run
-run
-run
-run
-run
