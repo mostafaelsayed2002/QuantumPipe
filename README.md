@@ -50,7 +50,7 @@ python assembler.py -i code.txt -o "output_file"
 <table>
   <tr>
     <td align="center">
-    <a href=" https://github.com/mostafaelsayed2002" target="_blank">
+    <a href="https://github.com/mostafaelsayed2002" target="_blank">
     <img src="https://avatars.githubusercontent.com/u/24477303?v=4" width="150px;" alt="Mostafa Elsayed"/>
     <br />
     <sub><b>Mostafa Elsayed</b></sub></a>
@@ -65,7 +65,7 @@ python assembler.py -i code.txt -o "output_file"
     <a href="https://github.com/Aly-Abdel-Motaleb" target="_blank">
     <img src="https://avatars.githubusercontent.com/u/94588581?v=4" width="150px;" alt="Aly-Abdel-Motaleb"/>
     <br />
-    <sub><b>Mostafa Elsayed</b></sub></a>
+    <sub><b>Aly Abdel Motaleb</b></sub></a>
     </td>
     <td align="center">
     <a href="https://github.com/Walid-Kh" target="_blank">
@@ -76,9 +76,3 @@ python assembler.py -i code.txt -o "output_file"
   </tr>
 
  </table>
-
-
-
-
-
-
