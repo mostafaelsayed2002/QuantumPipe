@@ -29,13 +29,14 @@ The control signals used in the processor are documented in a Google Spreadsheet
 
 ## Schematic Diagram
 
-The schematic diagram of the processor is visualized using an online drawing tool. It provides an overview of the components and their connections in the system [Schematic Diagram](https://www.tldraw.com/v/dJRQlmzGx5PjeXC4-ebE3?viewport=-17878,-12089,25600,14387&page=page:page)  
+The schematic diagram of the processor is visualized using an online drawing tool. It provides an overview of the components and their connections in the system. [Schematic Diagram](https://www.tldraw.com/v/dJRQlmzGx5PjeXC4-ebE3?viewport=-17878,-12089,25600,14387&page=page:page)  
   
  
   
 ## Assembler
 
-The assembler for this processor translates human-readable assembly code into machine code that the processor can execute.  enabling programmers to write code at a higher level and then convert it into the binary format understandable by the processor.
+The assembler for this processor translates human-readable assembly code into machine code that the processor can execute.
+enabling programmers to write code at a higher level and then convert it into the binary format understandable by the processor.
 
 To assemble your code, use the following command:
 ```
